@@ -4,6 +4,7 @@
 
 # Python
 /backend/.venv
+/backend/.env
 /backend/__pycache__
 *.py[cod]
 
@@ -13,3 +14,4 @@
 # Logs, OS files
 *.log
 .DS_Store
+.vscode

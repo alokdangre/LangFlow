@@ -1,6 +1,10 @@
-from fastapi import FastAPI
-app = FastAPI()
+from .server import app
+import uvicorn
+from dotenv import load_dotenv
 
-@app.get("/api/hello")
-async def hello():
-    return {"message": "Hello from FastAPI!"}
+load_dotenv()
+
+def main():
+    uvicorn.run(app, port=8000, host="0.0.0.0")
+
+main()
