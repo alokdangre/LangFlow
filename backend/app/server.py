@@ -43,7 +43,7 @@ graph = graph_builder.compile()
 def main(query):
 
     result = graph.invoke({"messages": [{"role": "user", "content": query}]})
-    print(result['messages'][1])
+    print(result['messages'])
     return result
 
 @app.post("/api/chat")
