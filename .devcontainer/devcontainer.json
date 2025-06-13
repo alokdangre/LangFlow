@@ -21,7 +21,8 @@
         "dbaeumer.vscode-eslint"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.pythonPath": "/workspaces/LangFlow/backend/.venv/bin/python"
       }
     }
   },
