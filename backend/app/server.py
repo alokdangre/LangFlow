@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Query
 from typing import Annotated
+from langgraph.checkpoint.memory import InMemorySaver
+from openai import Openai
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
@@ -18,15 +20,11 @@ llm = init_chat_model(
 )
 
 class State(TypedDict):
+    user_query: str
+    llm_result: str | None
     messages: Annotated[list, add_messages]
 
-@app.get('/')
-def root():
-    return {"status": "Server is up and running"}
 
-@app.get("/api/hello")
-async def hello():
-    return {"message": "Hello from FastAPI!"}
 
 def chat_node(state: State):
     response = llm.invoke(state["messages"])
