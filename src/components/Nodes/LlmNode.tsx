@@ -11,7 +11,7 @@ export default function LlmNode({ id, data }: NodeProps<LlmNodeData>) {
   return (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
       <Handle
-        id="input"
+        id="llm-input"
         type="target"
         position={Position.Left}
         isConnectable={data.isConnectable}

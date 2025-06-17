@@ -29,7 +29,7 @@ export default function ChatBoxNode({ data }: NodeProps<ChatBoxNodeData>) {
           <div className="text-xs text-gray-500">Chat Box</div>
         </div>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3" isConnectable={data.isConnectable} />
+      <Handle id='chat-input' type="source" position={Position.Right} className="w-3 h-3" isConnectable={data.isConnectable} />
     </div>
   )
 }

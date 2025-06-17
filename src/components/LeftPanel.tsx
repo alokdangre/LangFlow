@@ -40,7 +40,7 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${expanded ? 'w-64' : 'w-12'}`}>
+    <div className={`fixed left-0 top-15 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${expanded ? 'w-64' : 'w-12'}`}>
       <button
         onClick={handleExpandChange}
         className="absolute right-0 top-4 transform translate-x-1/2 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-gray-50"
@@ -49,7 +49,10 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
       </button>
       {expanded && (
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Nodes</h2>
+            <h2 className={`font-semibold text-gray-700 mb-4 ${!expanded && 
+        'hidden'}`}>
+          Component Nodes
+        </h2>
           <div className="space-y-2">
             {nodeTypes.map((node) => (
               <div

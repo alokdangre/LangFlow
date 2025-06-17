@@ -12,7 +12,6 @@ import {
   BackgroundVariant,
   useReactFlow,
   Node,
-  getConnectedEdges,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -56,18 +55,6 @@ const initialNodes: Node<CustomNodeData>[] = [
     data: { isConnectable: true, icon: <ModelIcon /> }
   },
   {
-    id: '5',
-    type: 'model',
-    position: { x: 250, y: 400 },
-    data: { isConnectable: true, icon: <ModelIcon /> }
-  },
-  {
-    id: '6',
-    type: 'model',
-    position: { x: 250, y: 400 },
-    data: { isConnectable: true, icon: <ModelIcon /> }
-  },
-  {
     id: '4',
     type: 'condition',
     position: { x: 250, y: 550 },
@@ -75,9 +62,8 @@ const initialNodes: Node<CustomNodeData>[] = [
   }
 ];
 const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2' },
-  { id: 'e2-3', source: '2', target: '3' },
-  { id: 'e3-4', source: '3', target: '4' }
+  { id: 'e1-2', source: '1', sourceHandle: 'chat-input',targetHandle: 'llm-input',target: '2' },
+  { id: 'e2-3', source: '2',sourceHandle: 'out-bottom',targetHandle:'model-input', target: '3' },
 ];
 
 export default function App() {
@@ -122,31 +108,39 @@ export default function App() {
   }, []);
 
   const isValidConnection = useCallback(
-    (connection: Connection) => {
-      const targetNode = nodes.find((node) => node.id === connection.target);
-      const sourceNode = nodes.find((node) => node.id === connection.source);
-      const targetHandle = connection.targetHandle;
-      const sourceHandle = connection.sourceHandle;
+    ({ source, sourceHandle, target, targetHandle }: Connection) => {
 
-      // Get existing edges for the target handle
-      const existingEdges = getConnectedEdges([targetNode!], edges);
-      const hasExistingConnection = existingEdges.some(
-        (edge) => edge.targetHandle === targetHandle && edge.target === connection.target
+        console.log(source)
+        console.log(sourceHandle)
+        console.log(target)
+        console.log(targetHandle)
+      // 1. No self-links
+      if (source === target) {
+        return false;
+      }
+
+      console.log("2. Prevent duplicate source-handle connections")
+      const sourceUsed = edges.some(
+        (e) => e.source === source && e.sourceHandle === sourceHandle
+            // console.log(e)
+            // console.log(e.source === source)
+            // console.log(e.sourceHandle === sourceHandle)
+        
+      );
+      console.log(sourceUsed)
+
+      console.log("3. Prevent duplicate target-handle connections")
+      const targetUsed = edges.some(
+        (e) => e.target === target && e.targetHandle === targetHandle
+        //     console.log(e)
+        //     console.log(e.target === target)
+        //     console.log(e.targetHandle === targetHandle)
+        // }
       );
 
-      // Prevent self-connections
-      if (connection.source === connection.target) {
-        return false;
-      }
-
-      // Prevent multiple connections to the same handle
-      if (hasExistingConnection) {
-        return false;
-      }
-
-      return true;
+      return !sourceUsed && !targetUsed;
     },
-    [nodes, edges]
+    [edges]
   );
 
   // Update viewport when panels change

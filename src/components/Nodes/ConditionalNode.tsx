@@ -22,7 +22,7 @@ export default function ConditionalNode({
   return (
     <div className="px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400 relative">
       <Handle
-        id="input"
+        id="cond-input"
         type="target"
         position={Position.Left}
         className="w-3 h-3"
