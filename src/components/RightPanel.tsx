@@ -4,7 +4,7 @@ import { useState } from 'react'
 interface RightPanelProps {
   onExpandChange?: (expanded: boolean) => void;
 }
-
+ 
 export default function RightPanel({ onExpandChange }: RightPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
