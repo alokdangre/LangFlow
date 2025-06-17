@@ -1,11 +1,11 @@
 'use client'
-import { Handle, Position } from 'reactflow'
+import { Handle, Position, NodeProps } from 'reactflow'
 
-type ChatBoxNodeProps = {
-    isConnectable: boolean,
+type ChatBoxNodeData = {
+  isConnectable: boolean
 }
 
-export default function ChatBoxNode(data: ChatBoxNodeProps) {
+export default function ChatBoxNode({ data }: NodeProps<ChatBoxNodeData>) {
   return (
     <div className="px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
       <div className="flex items-center">
@@ -29,7 +29,7 @@ export default function ChatBoxNode(data: ChatBoxNodeProps) {
           <div className="text-xs text-gray-500">Chat Box</div>
         </div>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3" isConnectable = {data.isConnectable} />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" isConnectable={data.isConnectable} />
     </div>
   )
 }
