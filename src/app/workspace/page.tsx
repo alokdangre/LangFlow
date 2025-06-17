@@ -16,10 +16,26 @@ import {
 import 'reactflow/dist/style.css';
 import LeftPanel from '@/components/LeftPanel';
 import RightPanel from '@/components/RightPanel';
+import ChatBoxNode from '@/components/Nodes/ChatBoxNode';
+import LLMNode from '@/components/Nodes/LlmNode';
+import ModelNode from '@/components/Nodes/ModelNode';
+import ConditionalNode from '@/components/Nodes/ConditionalNode';
+
+const nodeTypes = {
+  chatBox: ChatBoxNode,
+  llm: LLMNode,
+  model: ModelNode,
+  condition: ConditionalNode
+};
 
 const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
+  { 
+    id: '1', 
+    type: 'chatBox',
+    position: { x: 0, y: 0 }, 
+    data: true 
+  },
+  
 ];
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
@@ -58,6 +74,7 @@ export default function App() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          nodeTypes={nodeTypes}
           fitView
         >
           <Controls />
