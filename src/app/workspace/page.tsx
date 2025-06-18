@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -12,6 +12,7 @@ import {
   BackgroundVariant,
   useReactFlow,
   Node,
+  Edge,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -22,6 +23,7 @@ import LLMNode from '@/components/Nodes/LlmNode';
 import ModelNode from '@/components/Nodes/ModelNode';
 import ConditionalNode from '@/components/Nodes/ConditionalNode';
 import { ConditionalIcon, LLMIcon, ModelIcon } from '@/components/Nodes/NodeIcons';
+import { useWorkspaceStore } from '@/store/workspaceStore';
 
 type CustomNodeData = {
   isConnectable: boolean;
@@ -67,15 +69,39 @@ const initialEdges = [
 ];
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const {
+    nodes: persistedNodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    setSelectedNode,
+    setNodes,
+    setEdges
+  } = useWorkspaceStore()
+
+  // Add icons to nodes at render time
+  const nodes = useMemo(() => {
+    return persistedNodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        icon: node.type === 'llm' ? <LLMIcon /> :
+              node.type === 'model' ? <ModelIcon /> :
+              node.type === 'condition' ? <ConditionalIcon /> : undefined
+      }
+    }))
+  }, [persistedNodes])
+
   const [leftPanelExpanded, setLeftPanelExpanded] = useState(true);
   const [rightPanelExpanded, setRightPanelExpanded] = useState(true);
   const { fitView, getNode } = useReactFlow();
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
+    (params: Connection) => {
+      const newEdge = addEdge(params, edges);
+      setEdges(newEdge);
+    },
+    [edges, setEdges],
   );
 
   const onDrop = useCallback(
@@ -94,12 +120,16 @@ export default function App() {
         id: `${type}-${Date.now()}`,
         type,
         position,
-        data: { isConnectable: true }
+        data: { 
+          isConnectable: true,
+          label: type.charAt(0).toUpperCase() + type.slice(1)
+        }
       };
-
-      setNodes((nds) => nds.concat(newNode));
+      setNodes([...nodes, newNode]);
+      setSelectedNode(newNode);
+      setRightPanelExpanded(true);
     },
-    [setNodes]
+    [nodes, setNodes, setRightPanelExpanded]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -110,10 +140,6 @@ export default function App() {
   const isValidConnection = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
 
-        console.log(source)
-        console.log(sourceHandle)
-        console.log(target)
-        console.log(targetHandle)
       // 1. No self-links
       if (source === target) {
         return false;
@@ -162,6 +188,7 @@ export default function App() {
           isValidConnection={isValidConnection}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          onNodeClick={(_, node) => setSelectedNode(node)}
           fitView
         >
           <Controls />
