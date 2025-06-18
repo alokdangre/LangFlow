@@ -18,6 +18,7 @@ import {
 import 'reactflow/dist/style.css';
 import LeftPanel from '@/components/LeftPanel';
 import RightPanel from '@/components/RightPanel';
+import RunButton from '@/components/RunButton';
 import ChatBoxNode from '@/components/Nodes/ChatBoxNode';
 import LLMNode from '@/components/Nodes/LlmNode';
 import ModelNode from '@/components/Nodes/ModelNode';
@@ -178,6 +179,7 @@ export default function App() {
           leftPanelExpanded ? 'ml-64' : 'ml-12'
         } ${rightPanelExpanded ? 'mr-80' : 'mr-12'}`}
       >
+        <RunButton />
         <ReactFlow
           nodes={nodes}
           edges={edges}

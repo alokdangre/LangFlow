@@ -2,6 +2,8 @@
 import React from 'react'
 import { Handle, Position, NodeProps } from 'reactflow'
 import { LLMIcon } from './NodeIcons'
+import DeleteButton from '../DeleteButton'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 type LlmNodeData = {
   isConnectable: boolean
@@ -10,11 +12,14 @@ type LlmNodeData = {
   systemPrompt?: string
 }
 
-export default function LlmNode({ data }: NodeProps<LlmNodeData>) {
+export default function LlmNode({ id, data }: NodeProps<LlmNodeData>) {
   const isConfigured = data.typeOfWork
+  const selectedNode = useWorkspaceStore((state) => state.selectedNode)
+  const isSelected = selectedNode?.id === id
 
   return (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
+      <DeleteButton nodeId={id} isSelected={isSelected} />
       <Handle
         id="llm-input"
         type="target"

@@ -1,6 +1,8 @@
 'use client'
 import { Handle, Position, NodeProps } from 'reactflow'
 import { ModelIcon } from './NodeIcons'
+import DeleteButton from '../DeleteButton'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 type ModelNodeData = {
     isConnectable: boolean,
@@ -10,11 +12,14 @@ type ModelNodeData = {
     modelVersion?: string
 }
 
-export default function ModelNode({ data }: NodeProps<ModelNodeData>) {
+export default function ModelNode({ id, data }: NodeProps<ModelNodeData>) {
   const isConfigured = data.modelType && data.apiKey && data.modelVersion
+  const selectedNode = useWorkspaceStore((state) => state.selectedNode)
+  const isSelected = selectedNode?.id === id
 
   return (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
+      <DeleteButton nodeId={id} isSelected={isSelected} />
       <Handle id='model-input' type="target" position={Position.Top} className="w-3 h-3" isConnectable={data.isConnectable} />
       <div className="flex items-center">
         <div className="rounded-full w-8 h-8 flex items-center justify-center bg-indigo-100">

@@ -19,6 +19,7 @@ interface RFState {
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge[]) => void;
+  deleteNode: (nodeId: string) => void;
 }
 
 const storage = {
@@ -82,6 +83,17 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
 
       setEdges: (edges: Edge[]) => {
         set({ edges });
+      },
+
+      deleteNode: (nodeId: string) => {
+        const { nodes, edges } = get();
+        // Remove the node
+        const newNodes = nodes.filter(node => node.id !== nodeId);
+        // Remove all edges connected to this node
+        const newEdges = edges.filter(
+          edge => edge.source !== nodeId && edge.target !== nodeId
+        );
+        set({ nodes: newNodes, edges: newEdges, selectedNode: null });
       },
     }),
     {

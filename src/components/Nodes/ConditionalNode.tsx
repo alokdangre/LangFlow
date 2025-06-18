@@ -1,8 +1,9 @@
 'use client'
 import React from 'react';
-import { Handle, Position, NodeProps, useReactFlow, 
-Edge } from 'reactflow';
+import { Handle, Position, NodeProps, useReactFlow, Edge } from 'reactflow';
 import { ConditionalIcon } from './NodeIcons';
+import DeleteButton from '../DeleteButton';
+import { useWorkspaceStore } from '@/store/workspaceStore';
 
 type ConditionalNodeData = {
   isConnectable: boolean;
@@ -17,19 +18,20 @@ export default function ConditionalNode({
   data,
 }: NodeProps<ConditionalNodeData>) {
   const { getEdges } = useReactFlow();
+  const selectedNode = useWorkspaceStore((state) => state.selectedNode);
+  const isSelected = selectedNode?.id === id;
 
   const trueUsed = getEdges().some(
-    (e: Edge) => e.source === id && e.sourceHandle === 
-    'true'
+    (e: Edge) => e.source === id && e.sourceHandle === 'true'
   );
   const falseUsed = getEdges().some(
-    (e: Edge) => e.source === id && e.sourceHandle === 
-    'false'
+    (e: Edge) => e.source === id && e.sourceHandle === 'false'
   );
   const isConfigured = data.condition;
 
   return (
     <div className="px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400 relative">
+      <DeleteButton nodeId={id} isSelected={isSelected} />
       <Handle
         id="condition-input"
         type="target"

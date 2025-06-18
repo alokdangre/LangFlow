@@ -1,13 +1,19 @@
 'use client'
 import { Handle, Position, NodeProps } from 'reactflow'
+import DeleteButton from '../DeleteButton'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 type ChatBoxNodeData = {
   isConnectable: boolean
 }
 
-export default function ChatBoxNode({ data }: NodeProps<ChatBoxNodeData>) {
+export default function ChatBoxNode({ id, data }: NodeProps<ChatBoxNodeData>) {
+  const selectedNode = useWorkspaceStore((state) => state.selectedNode)
+  const isSelected = selectedNode?.id === id
+
   return (
-    <div className="px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
+    <div className="relative px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
+      <DeleteButton nodeId={id} isSelected={isSelected} />
       <div className="flex items-center">
         <div className="rounded-full w-8 h-8 flex items-center justify-center bg-indigo-100">
           <svg
