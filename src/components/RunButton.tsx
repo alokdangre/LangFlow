@@ -1,28 +1,24 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 
 export default function RunButton() {
-  const [isRunning, setIsRunning] = useState(false)
   const nodes = useWorkspaceStore((state) => state.nodes)
-  const edges = useWorkspaceStore((state) => state.edges)
+  const isRunning = useWorkspaceStore((state) => state.isRunning)
+  const setIsRunning = useWorkspaceStore((state) => state.setIsRunning)
 
   const handleRun = async () => {
     if (isRunning) return
 
-    setIsRunning(true)
-    try {
-      // TODO: Implement actual run logic here
-      console.log('Running workflow with nodes:', nodes)
-      console.log('And edges:', edges)
-      
-      // Simulate some processing time
-      await new Promise(resolve => setTimeout(resolve, 2000))
-    } catch (error) {
-      console.error('Error running workflow:', error)
-    } finally {
-      setIsRunning(false)
+    // Check for ChatBox node
+    const chatBoxNode = nodes.find(node => node.type === 'chatBox')
+    if (!chatBoxNode) {
+      alert('Please add a Chat Box node to your workspace first.')
+      return
     }
+
+    setIsRunning(true)
+    // The chat interface will be shown in the RightPanel
   }
 
   return (

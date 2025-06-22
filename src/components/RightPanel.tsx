@@ -1,26 +1,47 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import LLMConfig from './NodeConfigs/LLMConfig'
 import ModelConfig from './NodeConfigs/ModelConfig'
 import ConditionalConfig from './NodeConfigs/ConditionalConfig'
 import NoConfig from './NodeConfigs/NoConfig'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import ChatInterface from './Chat/ChatInterface'
 
 interface RightPanelProps {
   onExpandChange?: (expanded: boolean) => void;
 }
 
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
+
 export default function RightPanel({ onExpandChange }: RightPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [isClient, setIsClient] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
   const selectedNode = useWorkspaceStore((state) => state.selectedNode)
   const updateNodeData = useWorkspaceStore((state) => state.updateNodeData)
+  const {isRunning} = useWorkspaceStore()
+  const nodes = useWorkspaceStore((state) => state.nodes)
+  const edges = useWorkspaceStore((state) => state.edges)
 
-  console.log(selectedNode)
+  // console.log(selectedNode)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
   
   const handleExpandChange = (expanded: boolean) => {
     setIsExpanded(expanded)
@@ -30,6 +51,60 @@ export default function RightPanel({ onExpandChange }: RightPanelProps) {
   const handleConfigChange = (config: any) => {
     if (selectedNode) {
       updateNodeData(selectedNode.id, config)
+    }
+  }
+
+  const handleRun = async () => {
+    setMessages([])
+    setInput('')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+
+    const userMessage: Message = {
+      role: 'user',
+      content: input,
+      timestamp: new Date()
+    }
+
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nodes,
+          edges,
+          userInput: input
+        })
+      })
+
+      const data = await response.json()
+      
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.result || 'Sorry, I encountered an error processing your request.',
+        timestamp: new Date()
+      }
+
+      setMessages(prev => [...prev, assistantMessage])
+    } catch (error) {
+      console.error('Error:', error)
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error processing your request.',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -110,42 +185,50 @@ export default function RightPanel({ onExpandChange }: RightPanelProps) {
         </svg>
       </button>
 
-      <div className={`p-4 ${!isExpanded && 'hidden'}`}>
-        {selectedNode && selectedNode.type && (
-          <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+      <div className={`h-full flex flex-col ${!isExpanded && 'hidden'}`}>
+        {isRunning ? (
+          // Chat Interface
+          <ChatInterface />
+        ) : (
+          // Node Configuration
+          <div className="p-4">
+            {selectedNode && selectedNode.type && (
+              <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg
+                      className="w-4 h-4 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-blue-900">
+                      {selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1)} Node
+                    </h2>
+                    <p className="text-sm text-blue-600">ID: {selectedNode.id}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h2 className="font-semibold text-blue-900">
-                  {selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1)} Node
-                </h2>
-                <p className="text-sm text-blue-600">ID: {selectedNode.id}</p>
-              </div>
-            </div>
+            )}
+            
+            <h2 className="font-semibold text-gray-700 mb-4">
+              {selectedNode && selectedNode.type 
+                ? `${selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1)} Properties` 
+                : 'Properties'}
+            </h2>
+            
+            {renderNodeConfig()}
           </div>
         )}
-        
-        <h2 className="font-semibold text-gray-700 mb-4">
-          {selectedNode && selectedNode.type 
-            ? `${selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1)} Properties` 
-            : 'Properties'}
-        </h2>
-        
-        {renderNodeConfig()}
       </div>
     </div>
   )
