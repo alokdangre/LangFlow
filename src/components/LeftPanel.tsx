@@ -2,6 +2,7 @@
 import React from 'react'
 import { useReactFlow } from 'reactflow'
 import { ChatBoxIcon, LLMIcon, ModelIcon, ConditionalIcon } from './Nodes/NodeIcons'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 const nodeTypes = [
   { id: 'chatBox', label: 'Chat Box', icon: <ChatBoxIcon /> },
@@ -17,6 +18,7 @@ interface LeftPanelProps {
 export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
   const { addNodes } = useReactFlow();
   const [expanded, setExpanded] = React.useState(true);
+  const nodes = useWorkspaceStore((state) => state.nodes);
 
   const handleExpandChange = () => {
     const newExpanded = !expanded;
@@ -30,6 +32,16 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
   };
 
   const addNode = (type: string) => {
+    // Check if trying to add a ChatBox node
+    if (type === 'chatBox') {
+      // Check if a ChatBox node already exists
+      const existingChatBox = nodes.find(node => node.type === 'chatBox');
+      if (existingChatBox) {
+        alert('Only one Chat Box node is allowed per workspace.');
+        return;
+      }
+    }
+
     const newNode = {
       id: `${type}-${Date.now()}`,
       type,

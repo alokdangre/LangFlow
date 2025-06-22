@@ -146,13 +146,10 @@ export default function App() {
         return false;
       }
 
-      console.log("2. Prevent duplicate source-handle connections")
       const sourceUsed = edges.some(
         (e) => e.source === source && e.sourceHandle === sourceHandle
       );
-      console.log(sourceUsed)
-
-      console.log("3. Prevent duplicate target-handle connections")
+      
       const targetUsed = edges.some(
         (e) => e.target === target && e.targetHandle === targetHandle
       );

@@ -13,6 +13,7 @@ interface RFState {
   nodes: Node<NodeData>[];
   edges: Edge[];
   selectedNode: Node<NodeData> | null;
+  isRunning: boolean;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   setSelectedNode: (node: Node<NodeData> | null) => void;
@@ -20,6 +21,7 @@ interface RFState {
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge[]) => void;
   deleteNode: (nodeId: string) => void;
+  setIsRunning: (isRunning: boolean) => void;
 }
 
 const storage = {
@@ -43,23 +45,20 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       nodes: [],
       edges: [],
       selectedNode: null,
-
+      isRunning: false,
       onNodesChange: (changes: NodeChange[]) => {
-        set({
-          nodes: applyNodeChanges(changes, get().nodes),
-        });
+        set((state) => ({
+          nodes: applyNodeChanges(changes, state.nodes),
+        }));
       },
-
       onEdgesChange: (changes: EdgeChange[]) => {
-        set({
-          edges: applyEdgeChanges(changes, get().edges),
-        });
+        set((state) => ({
+          edges: applyEdgeChanges(changes, state.edges),
+        }));
       },
-
       setSelectedNode: (node: Node<NodeData> | null) => {
         set({ selectedNode: node });
       },
-
       updateNodeData: (nodeId: string, data: Partial<NodeData>) => {
         set({
           nodes: get().nodes.map((node) => {
@@ -76,35 +75,28 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
           }),
         });
       },
-
-      setNodes: (nodes: Node<NodeData>[]) => {
-        set({ nodes });
-      },
-
-      setEdges: (edges: Edge[]) => {
-        set({ edges });
-      },
-
+      setNodes: (nodes: Node<NodeData>[]) => set({ nodes }),
+      setEdges: (edges: Edge[]) => set({ edges }),
       deleteNode: (nodeId: string) => {
-        const { nodes, edges } = get();
-        // Remove the node
-        const newNodes = nodes.filter(node => node.id !== nodeId);
-        // Remove all edges connected to this node
-        const newEdges = edges.filter(
-          edge => edge.source !== nodeId && edge.target !== nodeId
-        );
-        set({ nodes: newNodes, edges: newEdges, selectedNode: null });
+        set((state) => ({
+          nodes: state.nodes.filter((node) => node.id !== nodeId),
+          edges: state.edges.filter(
+            (edge) => edge.source !== nodeId && edge.target !== nodeId
+          ),
+          selectedNode: null
+        }));
       },
+      setIsRunning: (isRunning: boolean) => set({ isRunning }),
     }),
     {
       name: 'workspace-storage',
       storage: createJSONStorage(() => storage),
       partialize: (state) => ({
-        nodes: state.nodes.map(node => ({
+        nodes: state.nodes.map((node: Node<NodeData>) => ({
           ...node,
           data: {
             ...node.data,
-            icon: undefined // Exclude icon from persistence
+            icon: undefined
           }
         })),
         edges: state.edges,
