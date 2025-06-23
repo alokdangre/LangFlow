@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import axios from 'axios'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -54,19 +55,13 @@ export default function ChatInterface() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/workflow', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nodes,
-          edges,
-          userInput: input
-        })
+      const response = await axios.post('/api/workflow', {
+        nodes,
+        edges,
+        userInput: input
       })
 
-      const data = await response.json()
+      const data = response.data
       
       const assistantMessage: Message = {
         role: 'assistant',

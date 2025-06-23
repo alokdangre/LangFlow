@@ -1,28 +1,32 @@
 'use client'
 import React from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import { getWorkspaceTree } from '@/utils/workspaceTraversal'
 
 export default function RunButton() {
   const nodes = useWorkspaceStore((state) => state.nodes)
+  const edges = useWorkspaceStore((state) => state.edges)
   const isRunning = useWorkspaceStore((state) => state.isRunning)
   const setIsRunning = useWorkspaceStore((state) => state.setIsRunning)
 
   const handleRun = async () => {
     if (isRunning) return
-
-    // Check for ChatBox node
     const chatBoxNode = nodes.find(node => node.type === 'chatBox')
     if (!chatBoxNode) {
       alert('Please add a Chat Box node to your workspace first.')
       return
     }
-
+    getWorkspaceTree(nodes, edges)
     setIsRunning(true)
-    // The chat interface will be shown in the RightPanel
+  }
+
+  const handleStop = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsRunning(false)
   }
 
   return (
-    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
+    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 flex space-x-2">
       <button
         onClick={handleRun}
         disabled={isRunning}
@@ -55,6 +59,18 @@ export default function RunButton() {
           </>
         )}
       </button>
+
+      {isRunning && (
+        <button
+          onClick={handleStop}
+          className="px-4 py-2 rounded-lg shadow-md flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white font-medium text-sm transition-all duration-200"
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+          </svg>
+          <span>Stop</span>
+        </button>
+      )}
     </div>
   )
 } 
