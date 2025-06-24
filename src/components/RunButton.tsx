@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
-import { getWorkspaceTree } from '@/utils/workspaceTraversal'
 import { traverseAndRequestBackend, WorkspaceNode } from '@/utils/workspaceRequest'
 
 export default function RunButton() {
