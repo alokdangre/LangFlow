@@ -11,7 +11,7 @@ interface LLMConfig {
   query: string
 }
 
-export async function runLLM(config: LLMConfig): Promise<string> {
+async function runLLM(config: LLMConfig): Promise<string> {
   const { typeOfWork, systemPrompt, model, modelType, apiKey, modelVersion, query } = config
 
   if (modelType === 'openai') {
