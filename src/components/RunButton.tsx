@@ -2,12 +2,22 @@
 import React from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import { getWorkspaceTree } from '@/utils/workspaceTraversal'
+import { traverseAndRequestBackend, WorkspaceNode } from '@/utils/workspaceRequest'
 
 export default function RunButton() {
   const nodes = useWorkspaceStore((state) => state.nodes)
   const edges = useWorkspaceStore((state) => state.edges)
   const isRunning = useWorkspaceStore((state) => state.isRunning)
   const setIsRunning = useWorkspaceStore((state) => state.setIsRunning)
+  const setNodeStatus = useWorkspaceStore((state) => state.setNodeStatus)
+  const resetAllNodeStatuses = useWorkspaceStore((state) => state.resetAllNodeStatuses)
+  const nodeStatuses = useWorkspaceStore((state) => state.nodeStatuses)
+
+  // Placeholder: update node status in your store/UI as needed
+  const updateNodeStatus = (nodeId: string, status: string) => {
+    // Implement this to update node status in your state/store
+    console.log(`Node ${nodeId} status: ${status}`)
+  }
 
   const handleRun = async () => {
     if (isRunning) return
@@ -16,8 +26,18 @@ export default function RunButton() {
       alert('Please add a Chat Box node to your workspace first.')
       return
     }
-    getWorkspaceTree(nodes, edges)
+    resetAllNodeStatuses()
     setIsRunning(true)
+
+    // // Get the graph and send to workspaceRequest
+    // const { nodes: graphNodes, edges: graphEdges } = getWorkspaceTree(nodes, edges)
+    // // Cast nodes to WorkspaceNode for status support
+    // await traverseAndRequestBackend({
+    //   nodes: graphNodes as WorkspaceNode[],
+    //   edges: graphEdges,
+    //   query: 'User query here', // Replace with actual user query
+    //   updateNodeStatus,
+    // })
   }
 
   const handleStop = (e: React.MouseEvent) => {

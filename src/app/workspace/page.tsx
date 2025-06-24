@@ -25,49 +25,7 @@ import ModelNode from '@/components/Nodes/ModelNode';
 import ConditionalNode from '@/components/Nodes/ConditionalNode';
 import { ConditionalIcon, LLMIcon, ModelIcon } from '@/components/Nodes/NodeIcons';
 import { useWorkspaceStore } from '@/store/workspaceStore';
-
-type CustomNodeData = {
-  isConnectable: boolean;
-  icon?: React.ReactElement;
-}
-
-const nodeTypes = {
-  chatBox: ChatBoxNode,
-  llm: LLMNode,
-  model: ModelNode,
-  condition: ConditionalNode
-};
-
-const initialNodes: Node<CustomNodeData>[] = [
-  { 
-    id: '1', 
-    type: 'chatBox',
-    position: { x: 250, y: 100 }, 
-    data: { isConnectable: true }
-  },
-  {
-    id: '2',
-    type: 'llm',
-    position: { x: 250, y: 250 },
-    data: { isConnectable: true, icon: <LLMIcon /> }
-  },
-  {
-    id: '3',
-    type: 'model',
-    position: { x: 250, y: 400 },
-    data: { isConnectable: true, icon: <ModelIcon /> }
-  },
-  {
-    id: '4',
-    type: 'condition',
-    position: { x: 250, y: 550 },
-    data: { isConnectable: true, icon: <ConditionalIcon /> }
-  }
-];
-const initialEdges = [
-  { id: 'e1-2', source: '1', sourceHandle: 'chat-input',targetHandle: 'llm-input',target: '2' },
-  { id: 'e2-3', source: '2',sourceHandle: 'out-bottom',targetHandle:'model-input', target: '3' },
-];
+import { nodeTypes } from '@/components/Nodes';
 
 export default function App() {
   const {
@@ -140,23 +98,38 @@ export default function App() {
 
   const isValidConnection = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
-
       // 1. No self-links
       if (source === target) {
+        return false;
+      }
+
+      // Get source and target node types
+      const sourceNode = nodes.find(n => n.id === source);
+      const targetNode = nodes.find(n => n.id === target);
+
+      // Enforce: model nodes can only connect to LLM nodes via 'input-model' handle
+      if (sourceNode?.type === 'model' && targetNode?.type === 'llm') {
+        if ((targetHandle !== 'input-model' && sourceHandle !== 'model-input') || (targetHandle !== 'model-input' && sourceHandle !== 'input-model')) return false;
+      }
+      // Optionally, prevent model nodes from connecting to anything else
+      if (sourceNode?.type === 'model' && targetNode?.type !== 'llm') {
+        return false;
+      }
+      // Optionally, prevent LLM nodes from accepting model connections on any handle except 'input-model'
+      if (targetNode?.type === 'llm' && sourceNode?.type !== 'model' && targetHandle === 'input-model') {
         return false;
       }
 
       const sourceUsed = edges.some(
         (e) => e.source === source && e.sourceHandle === sourceHandle
       );
-      
       const targetUsed = edges.some(
         (e) => e.target === target && e.targetHandle === targetHandle
       );
 
       return !sourceUsed && !targetUsed;
     },
-    [edges]
+    [edges, nodes]
   );
 
   // Update viewport when panels change
