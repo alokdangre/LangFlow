@@ -10,7 +10,7 @@ if (!process.env.GEMINI_API_KEY) {
  * @param isTrueCondition - The condition string to evaluate.
  * @returns Promise<boolean> - true if the condition is true, false otherwise.
  */
-export async function evaluateCondition (isTrueCondition: string, query: string): Promise<boolean> {
+async function evaluateCondition (isTrueCondition: string, query: string): Promise<boolean> {
   const openai = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
