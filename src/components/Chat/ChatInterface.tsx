@@ -2,6 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import axios from 'axios'
+import { traverseAndRequestBackend } from '@/utils/workspaceRequest'
+import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -17,6 +21,7 @@ export default function ChatInterface() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const nodes = useWorkspaceStore((state) => state.nodes)
   const edges = useWorkspaceStore((state) => state.edges)
+  const setNodeStatus = useWorkspaceStore((state) => state.setNodeStatus)
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -24,21 +29,36 @@ export default function ChatInterface() {
     }
   }, [messages])
 
-  const formatMessage = (content: string) => {
-    // Handle code blocks
-    const codeBlockRegex = /```([\s\S]*?)```/g
-    const formattedContent = content.replace(codeBlockRegex, (match, code) => {
-      return `<pre class="bg-gray-800 text-white p-4 rounded-lg my-2 overflow-x-auto"><code>${code.trim()}</code></pre>`
-    })
-
-    // Handle line breaks
-    return formattedContent.split('\n').map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i < content.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ))
-  }
+  const formatMessage = (content: string = 'no answer') => (
+    <ReactMarkdown
+      children={content}
+      components={{
+        code({ node, inline, className, children, ...props }: {
+          node?: any;
+          inline?: boolean;
+          className?: string;
+          children?: React.ReactNode;
+          [key: string]: any;
+        }) {
+          const match = /language-(\w+)/.exec(className || '')
+          return !inline ? (
+            <SyntaxHighlighter
+              style={oneDark as any}
+              language={match?.[1] || ''}
+              PreTag="div"
+              {...props}
+            >
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          ) : (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          )
+        }
+      }}
+    />
+  )
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,17 +75,20 @@ export default function ChatInterface() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post('/api/workflow', {
+
+      console.log(nodes)
+      const response = await traverseAndRequestBackend({
+        query: userMessage.content,
         nodes,
         edges,
-        userInput: input
+        setNodeStatus,
       })
 
-      const data = response.data
+      console.log('chat hai',response)
       
       const assistantMessage: Message = {
         role: 'assistant',
-        content: typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2),
+        content: typeof response === 'string' ? response : JSON.stringify(response, null, 2),
         timestamp: new Date()
       }
 

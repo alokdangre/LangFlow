@@ -8,6 +8,7 @@ interface LLMConfigProps {
 export interface LLMConfigData {
   typeOfWork: string;
   systemPrompt?: string;
+  modelNodeId?: string;
 }
 
 const workTypes = [
@@ -25,7 +26,8 @@ export default function LLMConfig({ onConfigChange }: LLMConfigProps) {
   const selectedNode = useWorkspaceStore((state) => state.selectedNode);
   const [config, setConfig] = useState<LLMConfigData>({
     typeOfWork: '',
-    systemPrompt: ''
+    systemPrompt: '',
+    modelNodeId: ''
   });
 
   // Initialize config with node data when selected node changes
@@ -33,7 +35,8 @@ export default function LLMConfig({ onConfigChange }: LLMConfigProps) {
     if (selectedNode) {
       setConfig({
         typeOfWork: selectedNode.data.typeOfWork || '',
-        systemPrompt: selectedNode.data.systemPrompt || ''
+        systemPrompt: selectedNode.data.systemPrompt || '',
+        modelNodeId: selectedNode.data.modelNodeId || '',
       });
     }
   }, [selectedNode]);
@@ -83,6 +86,21 @@ export default function LLMConfig({ onConfigChange }: LLMConfigProps) {
           placeholder="Enter system prompt..."
           className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 min-h-[100px] resize-y"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Connected Model Node <span className="text-red-500">*</span>
+        </label>
+        {config.modelNodeId ? (
+          <div className="px-3 py-2 rounded-lg bg-green-100 text-green-800">
+            Model Node ID: <span className="font-mono">{config.modelNodeId}</span>
+          </div>
+        ) : (
+          <div className="px-3 py-2 rounded-lg bg-red-100 text-red-800">
+            No model node connected. Please connect a model node to the LLM node's <b>input-model</b> handle.
+          </div>
+        )}
       </div>
     </div>
   );

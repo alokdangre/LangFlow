@@ -27,7 +27,7 @@ const modelTypes = [
   { 
     id: 'gemini', 
     label: 'Gemini', 
-    versions: ['gemini-pro', 'gemini-pro-vision'],
+    versions: ['gemini-2.0-flash' ,'gemini-pro', 'gemini-pro-vision'],
     placeholder: 'AIza...'
   }
 ];

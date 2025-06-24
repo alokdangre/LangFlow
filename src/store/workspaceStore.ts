@@ -14,6 +14,9 @@ interface RFState {
   edges: Edge[];
   selectedNode: Node<NodeData> | null;
   isRunning: boolean;
+  nodeStatuses: Record<string, 'not running' | 'pending' | 'success' | 'error'>;
+  setNodeStatus: (nodeId: string, status: 'not running' | 'pending' | 'success' | 'error') => void;
+  resetAllNodeStatuses: () => void;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   setSelectedNode: (node: Node<NodeData> | null) => void;
@@ -46,6 +49,24 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       edges: [],
       selectedNode: null,
       isRunning: false,
+      nodeStatuses: {},
+      setNodeStatus: (nodeId, status) => {
+        set((state) => ({
+          nodeStatuses: {
+            ...state.nodeStatuses,
+            [nodeId]: status,
+          },
+        }))
+      },
+      resetAllNodeStatuses: () => {
+        set((state) => {
+          const resetStatuses: Record<string, 'not running'> = {};
+          state.nodes.forEach((node) => {
+            resetStatuses[node.id] = 'not running';
+          });
+          return { nodeStatuses: resetStatuses };
+        })
+      },
       onNodesChange: (changes: NodeChange[]) => {
         set((state) => ({
           nodes: applyNodeChanges(changes, state.nodes),
@@ -103,4 +124,7 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       }),
     }
   )
-); 
+);
+
+// Export the store instance for use outside React
+export const workspaceStore = useWorkspaceStore; 

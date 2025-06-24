@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import { Handle, Position, NodeProps } from 'reactflow'
-import { LLMIcon } from './NodeIcons'
 import DeleteButton from '../DeleteButton'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 
@@ -10,6 +9,7 @@ type LlmNodeData = {
   icon: React.ReactNode
   typeOfWork?: string
   systemPrompt?: string
+  modelNodeId?: string
 }
 
 export default function LlmNode({ id, data }: NodeProps<LlmNodeData>) {
@@ -59,7 +59,7 @@ export default function LlmNode({ id, data }: NodeProps<LlmNodeData>) {
       />
 
       <Handle
-        id="out-bottom"
+        id="input-model"
         type="source"
         position={Position.Bottom}
         isConnectable={data.isConnectable}

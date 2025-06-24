@@ -1,4 +1,5 @@
 import { OpenAI } from 'openai'
+import { NextRequest, NextResponse } from 'next/server'
 
 interface LLMConfig {
   typeOfWork: string
@@ -45,6 +46,7 @@ export async function runLLM(config: LLMConfig): Promise<string> {
       apiKey,
       baseURL: 'https://api.anthropic.com/v1/'
     })
+    
     const response = await openai.chat.completions.create({
       model: modelVersion || model,
       messages: [
@@ -56,4 +58,17 @@ export async function runLLM(config: LLMConfig): Promise<string> {
   }
 
   throw new Error(`Unsupported model type: ${modelType}`)
-} 
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { llmConfig, modelConfig, query } = body;
+    // Merge configs, modelConfig takes precedence for model fields
+    const mergedConfig = { ...llmConfig, ...modelConfig, query };
+    const result = await runLLM(mergedConfig);
+    return NextResponse.json({ result });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal error' }, { status: 500 });
+  }
+}

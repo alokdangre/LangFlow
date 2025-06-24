@@ -1,4 +1,5 @@
 import { OpenAI } from 'openai';
+import { NextRequest, NextResponse } from 'next/server';
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('GEMINI_API_KEY is not defined in environment variables');
@@ -17,10 +18,21 @@ export async function evaluateCondition (isTrueCondition: string, query: string)
   const response = await openai.chat.completions.create({
     model: 'gemini-2.0-flash',
     messages: [
-      { role: 'system', content: `You are the assistant which  will be given the statement by the user. Just tell if it is true or false based on true condition.The condition for true is ---> ${isTrueCondition}. Now only output 'true' if true else 'false'. Tge condition can be anything and some time it might not be related to the statement then for such condition just output it as true.` },
+      { role: 'system', content: `You are the assistant which  will be given the statement by the user. Just tell if it is true or false based on true condition.The condition for true is ---> ${isTrueCondition}. Now only output 'true' if true else 'false'.` },
       { role: 'user', content: query }
     ]
   })
   const answer = response.choices[0]?.message?.content?.trim().toLowerCase() ?? 'false'
   return answer === 'true'
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { isTrueCondition, query } = body;
+    const result = await evaluateCondition(isTrueCondition, query);
+    return NextResponse.json({ result });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal error' }, { status: 500 });
+  }
 } 
