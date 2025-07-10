@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import { NextRequest, NextResponse } from 'next/server';
-import {evaluateCondition} from './help.ts';
+import {evaluateCondition} from './help';
 
 export async function POST(request: NextRequest) {
   try {
