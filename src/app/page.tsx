@@ -35,19 +35,17 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
               <Link 
-                href="/workspace" 
+                href="/auth/signup" 
                 className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-center"
               >
-                Get Started
+                Get Started Free
               </Link>
-              <a 
-                href="https://github.com/logspace-ai/langflow" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <Link 
+                href="/pricing"
                 className="w-full sm:w-auto px-8 py-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-center"
               >
-                View on GitHub
-              </a>
+                View Pricing
+              </Link>
             </div>
           </div>
         </div>
@@ -99,12 +97,12 @@ export default function Home() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 md:p-16 text-center">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to Build Your AI Workflows?</h2>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Start creating powerful AI workflows today with our intuitive platform</p>
-            <Link 
-              href="/workspace" 
-              className="inline-block px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-            >
-              Get Started Now
-            </Link>
+              <Link 
+                href="/auth/signup" 
+                className="inline-block px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
+              >
+                Get Started Now
+              </Link>
           </div>
         </div>
       </section>
