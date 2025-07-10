@@ -9,12 +9,26 @@ interface NodeData {
   [key: string]: any;
 }
 
+interface Workflow {
+  id: string;
+  name: string;
+  description?: string;
+  nodes: Node<NodeData>[];
+  edges: Edge[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface RFState {
   nodes: Node<NodeData>[];
   edges: Edge[];
   selectedNode: Node<NodeData> | null;
   isRunning: boolean;
   nodeStatuses: Record<string, 'not running' | 'pending' | 'success' | 'error'>;
+  currentWorkflow: Workflow | null;
+  hasUnsavedChanges: boolean;
+  autoSave: boolean;
   setNodeStatus: (nodeId: string, status: 'not running' | 'pending' | 'success' | 'error') => void;
   resetAllNodeStatuses: () => void;
   onNodesChange: (changes: NodeChange[]) => void;
@@ -25,6 +39,13 @@ interface RFState {
   setEdges: (edges: Edge[]) => void;
   deleteNode: (nodeId: string) => void;
   setIsRunning: (isRunning: boolean) => void;
+  loadWorkflow: (workflow: Workflow) => void;
+  createNewWorkflow: () => void;
+  setCurrentWorkflow: (workflow: Workflow | null) => void;
+  markAsUnsaved: () => void;
+  markAsSaved: () => void;
+  setAutoSave: (enabled: boolean) => void;
+  saveCurrentWorkflow: () => Promise<void>;
 }
 
 const storage = {
@@ -50,6 +71,9 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       selectedNode: null,
       isRunning: false,
       nodeStatuses: {},
+      currentWorkflow: null,
+      hasUnsavedChanges: false,
+      autoSave: false,
       setNodeStatus: (nodeId, status) => {
         set((state) => ({
           nodeStatuses: {
@@ -70,11 +94,13 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       onNodesChange: (changes: NodeChange[]) => {
         set((state) => ({
           nodes: applyNodeChanges(changes, state.nodes),
+          hasUnsavedChanges: true,
         }));
       },
       onEdgesChange: (changes: EdgeChange[]) => {
         set((state) => ({
           edges: applyEdgeChanges(changes, state.edges),
+          hasUnsavedChanges: true,
         }));
       },
       setSelectedNode: (node: Node<NodeData> | null) => {
@@ -94,20 +120,81 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
             }
             return node;
           }),
+          hasUnsavedChanges: true,
         });
       },
-      setNodes: (nodes: Node<NodeData>[]) => set({ nodes }),
-      setEdges: (edges: Edge[]) => set({ edges }),
+      setNodes: (nodes: Node<NodeData>[]) => set({ nodes, hasUnsavedChanges: true }),
+      setEdges: (edges: Edge[]) => set({ edges, hasUnsavedChanges: true }),
       deleteNode: (nodeId: string) => {
         set((state) => ({
           nodes: state.nodes.filter((node) => node.id !== nodeId),
           edges: state.edges.filter(
             (edge) => edge.source !== nodeId && edge.target !== nodeId
           ),
-          selectedNode: null
+          selectedNode: null,
+          hasUnsavedChanges: true,
         }));
       },
       setIsRunning: (isRunning: boolean) => set({ isRunning }),
+      loadWorkflow: (workflow: Workflow) => {
+        console.log(workflow)
+        set({
+          nodes: workflow.nodes || [],
+          edges: workflow.edges || [],
+          currentWorkflow: workflow,
+          selectedNode: null,
+          hasUnsavedChanges: false,
+        });
+      },
+      createNewWorkflow: () => {
+        set({
+          nodes: [],
+          edges: [],
+          currentWorkflow: null,
+          selectedNode: null,
+          hasUnsavedChanges: false,
+        });
+      },
+      setCurrentWorkflow: (workflow: Workflow | null) => {
+        console.log(workflow)
+        set({ currentWorkflow: workflow });
+      },
+      markAsUnsaved: () => {
+        set({ hasUnsavedChanges: true });
+      },
+      markAsSaved: () => {
+        set({ hasUnsavedChanges: false });
+      },
+      setAutoSave: (enabled: boolean) => {
+        set({ autoSave: enabled });
+      },
+      saveCurrentWorkflow: async () => {
+        const state = get();
+        if (!state.currentWorkflow) return;
+
+        try {
+          const response = await fetch(`/api/workflows/${state.currentWorkflow.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              nodes: state.nodes,
+              edges: state.edges
+            }),
+          });
+
+          if (response.ok) {
+            const updatedWorkflow = await response.json();
+            set({ 
+              currentWorkflow: updatedWorkflow,
+              hasUnsavedChanges: false 
+            });
+          }
+        } catch (error) {
+          console.error('Error saving workflow:', error);
+        }
+      },
     }),
     {
       name: 'workspace-storage',
@@ -127,4 +214,4 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
 );
 
 // Export the store instance for use outside React
-export const workspaceStore = useWorkspaceStore; 
+export const workspaceStore = useWorkspaceStore;
