@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
@@ -30,7 +30,7 @@ import { ConditionalIcon, LLMIcon, ModelIcon } from '@/components/Nodes/NodeIcon
 import { useWorkspaceStore } from '@/store/workspaceStore';
 import { nodeTypes } from '@/components/Nodes';
 
-export default function App() {
+function WorkspaceContent() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const {
@@ -197,5 +197,13 @@ export default function App() {
       </div>
       <RightPanel onExpandChange={setRightPanelExpanded} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={<div className="w-screen h-screen flex items-center justify-center">Loading workspace...</div>}>
+      <WorkspaceContent />
+    </Suspense>
   );
 }
