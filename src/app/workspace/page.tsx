@@ -1,5 +1,7 @@
 'use client'
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import {
   ReactFlow,
   MiniMap,
@@ -19,6 +21,7 @@ import 'reactflow/dist/style.css';
 import LeftPanel from '@/components/LeftPanel';
 import RightPanel from '@/components/RightPanel';
 import RunButton from '@/components/RunButton';
+import WorkflowHeader from '@/components/WorkflowHeader';
 import ChatBoxNode from '@/components/Nodes/ChatBoxNode';
 import LLMNode from '@/components/Nodes/LlmNode';
 import ModelNode from '@/components/Nodes/ModelNode';
@@ -28,6 +31,8 @@ import { useWorkspaceStore } from '@/store/workspaceStore';
 import { nodeTypes } from '@/components/Nodes';
 
 export default function App() {
+  const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const {
     nodes: persistedNodes,
     edges,
@@ -35,7 +40,9 @@ export default function App() {
     onEdgesChange,
     setSelectedNode,
     setNodes,
-    setEdges
+    setEdges,
+    loadWorkflow,
+    currentWorkflow
   } = useWorkspaceStore()
 
   // Add icons to nodes at render time
@@ -132,6 +139,25 @@ export default function App() {
     [edges, nodes]
   );
 
+  // Load workflow from URL parameter
+  useEffect(() => {
+    const workflowId = searchParams.get('workflow');
+    if (workflowId && session?.user && (!currentWorkflow || currentWorkflow.id !== workflowId)) {
+      const loadWorkflowFromId = async () => {
+        try {
+          const response = await fetch(`/api/workflows/${workflowId}`);
+          if (response.ok) {
+            const workflow = await response.json();
+            loadWorkflow(workflow);
+          }
+        } catch (error) {
+          console.error('Error loading workflow:', error);
+        }
+      };
+      loadWorkflowFromId();
+    }
+  }, [searchParams, session, currentWorkflow, loadWorkflow]);
+
   // Update viewport when panels change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -149,6 +175,7 @@ export default function App() {
           leftPanelExpanded ? 'ml-64' : 'ml-12'
         } ${rightPanelExpanded ? 'mr-80' : 'mr-12'}`}
       >
+        <WorkflowHeader />
         <RunButton />
         <ReactFlow
           nodes={nodes}

@@ -3,6 +3,7 @@ import React from 'react'
 import { useReactFlow } from 'reactflow'
 import { ChatBoxIcon, LLMIcon, ModelIcon, ConditionalIcon } from './Nodes/NodeIcons'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import WorkflowManager from './WorkflowManager'
 
 const nodeTypes = [
   { id: 'chatBox', label: 'Chat Box', icon: <ChatBoxIcon /> },
@@ -18,7 +19,15 @@ interface LeftPanelProps {
 export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
   const { addNodes } = useReactFlow();
   const [expanded, setExpanded] = React.useState(true);
-  const nodes = useWorkspaceStore((state) => state.nodes);
+  const { 
+    nodes, 
+    edges, 
+    currentWorkflow, 
+    loadWorkflow, 
+    createNewWorkflow, 
+    setCurrentWorkflow,
+    markAsSaved 
+  } = useWorkspaceStore();
 
   const handleExpandChange = () => {
     const newExpanded = !expanded;
@@ -60,11 +69,26 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
         {expanded ? '←' : '→'}
       </button>
       {expanded && (
-        <div className="p-4">
-            <h2 className={`font-semibold text-gray-700 mb-4 ${!expanded && 
-        'hidden'}`}>
-          Component Nodes
-        </h2>
+        <div className="p-4 h-full overflow-y-auto">
+          {/* Workflow Manager */}
+          <WorkflowManager
+            currentWorkflow={currentWorkflow}
+            onWorkflowSelect={loadWorkflow}
+            onWorkflowSave={(workflow) => {
+              setCurrentWorkflow(workflow);
+              markAsSaved();
+            }}
+            onWorkflowCreate={createNewWorkflow}
+            currentNodes={nodes}
+            currentEdges={edges}
+          />
+          
+          <div className="border-t border-gray-200 my-4"></div>
+          
+          {/* Component Nodes */}
+          <h2 className="font-semibold text-gray-700 mb-4">
+            Component Nodes
+          </h2>
           <div className="space-y-2">
             {nodeTypes.map((node) => (
               <div
@@ -85,4 +109,4 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
       )}
     </div>
   )
-} 
+}
