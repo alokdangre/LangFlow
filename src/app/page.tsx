@@ -1,14 +1,243 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const featuresRef = useRef<HTMLElement>(null);
+  const howItWorksRef = useRef<HTMLElement>(null);
+  const testimonialsRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
+    
+    // Register GSAP plugins
+    if (typeof window !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Hero section floating particles animation
+      const createFloatingParticles = () => {
+        const particles = [];
+        for (let i = 0; i < 50; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle absolute w-1 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-20';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          heroRef.current?.appendChild(particle);
+          particles.push(particle);
+        }
+        
+        particles.forEach((particle, index) => {
+          gsap.to(particle, {
+            x: Math.random() * 200 - 100,
+            y: Math.random() * 200 - 100,
+            rotation: 360,
+            duration: 10 + Math.random() * 10,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: index * 0.1
+          });
+        });
+      };
+
+      // Hero section wave animation
+      const createWaveAnimation = () => {
+        const wave = document.createElement('div');
+        wave.className = 'absolute inset-0 opacity-10';
+        wave.innerHTML = `
+          <svg className="w-full h-full" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+            <path id="wave1" d="M0,400 Q300,300 600,400 T1200,400 V800 H0 Z" fill="url(#gradient1)"/>
+            <path id="wave2" d="M0,450 Q300,350 600,450 T1200,450 V800 H0 Z" fill="url(#gradient2)"/>
+            <defs>
+              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
+              </linearGradient>
+              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.2" />
+              </linearGradient>
+            </defs>
+          </svg>
+        `;
+        heroRef.current?.appendChild(wave);
+
+        gsap.to("#wave1", {
+          attr: { d: "M0,400 Q300,500 600,400 T1200,400 V800 H0 Z" },
+          duration: 4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+        });
+
+        gsap.to("#wave2", {
+          attr: { d: "M0,450 Q300,550 600,450 T1200,450 V800 H0 Z" },
+          duration: 6,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+        });
+      };
+
+      // Features section grid animation
+      const createGridAnimation = () => {
+        if (featuresRef.current) {
+          const grid = document.createElement('div');
+          grid.className = 'absolute inset-0 opacity-10';
+          grid.innerHTML = `
+            <div class="grid grid-cols-12 h-full gap-1">
+              ${Array.from({ length: 120 }, (_, i) => 
+                `<div class="grid-item w-full h-8 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded"></div>`
+              ).join('')}
+            </div>
+          `;
+          featuresRef.current.appendChild(grid);
+
+          gsap.fromTo('.grid-item', {
+            scale: 0,
+            opacity: 0
+          }, {
+            scale: 1,
+            opacity: 0.3,
+            duration: 0.1,
+            stagger: {
+              amount: 3,
+              grid: [12, 10],
+              from: "center"
+            },
+            scrollTrigger: {
+              trigger: featuresRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse"
+            }
+          });
+        }
+      };
+
+      // How It Works section connection animation
+      const createConnectionAnimation = () => {
+        if (howItWorksRef.current) {
+          const connections = document.createElement('div');
+          connections.className = 'absolute inset-0 opacity-30';
+          connections.innerHTML = `
+            <svg class="w-full h-full" viewBox="0 0 1200 600">
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#06b6d4" />
+                  <stop offset="50%" style="stop-color:#8b5cf6" />
+                  <stop offset="100%" style="stop-color:#10b981" />
+                </linearGradient>
+              </defs>
+              <path id="connectionPath" d="M100,300 Q400,200 600,300 Q800,400 1100,300" 
+                    stroke="url(#lineGradient)" stroke-width="2" fill="none"/>
+            </svg>
+          `;
+          howItWorksRef.current.appendChild(connections);
+
+          gsap.fromTo("#connectionPath", {
+            strokeDasharray: "0 1000"
+          }, {
+            strokeDasharray: "1000 0",
+            duration: 3,
+            ease: "power2.inOut",
+            scrollTrigger: {
+              trigger: howItWorksRef.current,
+              start: "top 70%",
+              end: "bottom 30%",
+              toggleActions: "play none none reverse"
+            }
+          });
+        }
+      };
+
+      // Testimonials section bubble animation
+      const createBubbleAnimation = () => {
+        if (testimonialsRef.current) {
+          const bubbles = [];
+          for (let i = 0; i < 20; i++) {
+            const bubble = document.createElement('div');
+            const size = Math.random() * 60 + 20;
+            bubble.className = `absolute rounded-full opacity-10 bg-gradient-to-r from-yellow-400 to-pink-400`;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.top = Math.random() * 100 + '%';
+            testimonialsRef.current.appendChild(bubble);
+            bubbles.push(bubble);
+          }
+
+          bubbles.forEach((bubble, index) => {
+            gsap.to(bubble, {
+              y: -100,
+              x: Math.random() * 100 - 50,
+              scale: Math.random() * 0.5 + 0.5,
+              rotation: 360,
+              duration: 15 + Math.random() * 10,
+              repeat: -1,
+              ease: "sine.inOut",
+              delay: index * 0.2
+            });
+          });
+        }
+      };
+
+      // CTA section energy animation
+      const createEnergyAnimation = () => {
+        if (ctaRef.current) {
+          const energy = document.createElement('div');
+          energy.className = 'absolute inset-0 opacity-20';
+          energy.innerHTML = `
+            <div class="energy-field w-full h-full relative">
+              ${Array.from({ length: 100 }, (_, i) => 
+                `<div class="energy-particle absolute w-1 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full"></div>`
+              ).join('')}
+            </div>
+          `;
+          ctaRef.current.appendChild(energy);
+
+          gsap.set('.energy-particle', {
+            x: () => Math.random() * window.innerWidth,
+            y: () => Math.random() * window.innerHeight
+          });
+
+          gsap.to('.energy-particle', {
+            x: () => Math.random() * window.innerWidth,
+            y: () => Math.random() * window.innerHeight,
+            duration: () => Math.random() * 3 + 2,
+            repeat: -1,
+            ease: "none",
+            stagger: {
+              amount: 2,
+              repeat: -1
+            }
+          });
+        }
+      };
+
+      // Initialize all animations
+      setTimeout(() => {
+        createFloatingParticles();
+        createWaveAnimation();
+        createGridAnimation();
+        createConnectionAnimation();
+        createBubbleAnimation();
+        createEnergyAnimation();
+      }, 100);
+
+      // Cleanup function
+      return () => {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      };
+    }
   }, []);
 
   return (
@@ -97,7 +326,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24">
+      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
@@ -163,7 +392,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 px-6 relative bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-800/50 overflow-hidden transition-all duration-1000">
+      <section ref={featuresRef} id="features" className="py-32 px-6 relative bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-800/50 overflow-hidden transition-all duration-1000">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
@@ -266,7 +495,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-32 px-6 relative bg-gradient-to-br from-slate-800/50 via-purple-800/30 to-purple-900/40 overflow-hidden transition-all duration-1000">
+      <section ref={howItWorksRef} id="how-it-works" className="py-32 px-6 relative bg-gradient-to-br from-slate-800/50 via-purple-800/30 to-purple-900/40 overflow-hidden transition-all duration-1000">
         {/* Animated Connecting Lines Background */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-1/2 left-1/4 w-32 h-px bg-gradient-to-r from-cyan-500 to-purple-500 animate-pulse"></div>
@@ -328,7 +557,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-32 px-6 relative bg-gradient-to-br from-purple-900/40 via-slate-800/30 to-cyan-900/30 overflow-hidden transition-all duration-1000">
+      <section ref={testimonialsRef} className="py-32 px-6 relative bg-gradient-to-br from-purple-900/40 via-slate-800/30 to-cyan-900/30 overflow-hidden transition-all duration-1000">
         {/* Floating Testimonial Bubbles Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/30 rounded-full blur-2xl animate-float"></div>
@@ -412,7 +641,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-6 relative bg-gradient-to-br from-indigo-900/30 via-purple-900/30 to-pink-900/30 overflow-hidden">
+      <section ref={ctaRef} className="py-32 px-6 relative bg-gradient-to-br from-indigo-900/30 via-purple-900/30 to-pink-900/30 overflow-hidden">
         {/* Animated Particle System Background */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 w-4 h-4 bg-cyan-400 rounded-full animate-ping"></div>
