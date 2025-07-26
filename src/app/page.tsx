@@ -163,7 +163,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 px-6 relative bg-gradient-to-b from-black/10 via-purple-900/10 to-black/10 overflow-hidden">
+      <section id="features" className="py-32 px-6 relative bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-800/50 overflow-hidden transition-all duration-1000">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
@@ -266,7 +266,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-32 px-6 relative bg-gradient-to-r from-slate-800/30 via-purple-800/20 to-slate-800/30 overflow-hidden">
+      <section id="how-it-works" className="py-32 px-6 relative bg-gradient-to-br from-slate-800/50 via-purple-800/30 to-purple-900/40 overflow-hidden transition-all duration-1000">
         {/* Animated Connecting Lines Background */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-1/2 left-1/4 w-32 h-px bg-gradient-to-r from-cyan-500 to-purple-500 animate-pulse"></div>
@@ -328,7 +328,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-32 px-6 relative bg-gradient-to-br from-purple-900/20 via-black/20 to-cyan-900/20 overflow-hidden">
+      <section className="py-32 px-6 relative bg-gradient-to-br from-purple-900/40 via-slate-800/30 to-cyan-900/30 overflow-hidden transition-all duration-1000">
         {/* Floating Testimonial Bubbles Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/30 rounded-full blur-2xl animate-float"></div>
@@ -449,7 +449,7 @@ export default function Home() {
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Ready to Transform Your
                 <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 animate-shimmer">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
                   AI Development?
                 </span>
               </h2>
