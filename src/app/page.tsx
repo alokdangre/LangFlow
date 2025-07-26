@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
@@ -13,11 +14,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-black/20 backdrop-blur-lg border-b border-white/10 z-50">
+      <nav className="fixed top-0 w-full bg-black/30 backdrop-blur-xl border-b border-white/10 z-[100]">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
             LangFlow
           </div>
+          
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             <Link href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors duration-300">
               Features
@@ -32,6 +35,61 @@ export default function Home() {
               Sign In
             </Link>
             <Link href="/auth/signup" className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25">
+              Get Started
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden flex items-center justify-center w-10 h-10 text-gray-300 hover:text-white transition-colors duration-300"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <div className={`md:hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden bg-black/40 backdrop-blur-xl border-t border-white/10`}>
+          <div className="container mx-auto px-6 py-6 space-y-4">
+            <Link 
+              href="#features" 
+              className="block text-gray-300 hover:text-cyan-400 transition-colors duration-300 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              href="#how-it-works" 
+              className="block text-gray-300 hover:text-cyan-400 transition-colors duration-300 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              How it Works
+            </Link>
+            <Link 
+              href="/pricing" 
+              className="block text-gray-300 hover:text-cyan-400 transition-colors duration-300 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link 
+              href="/auth/signin" 
+              className="block text-gray-300 hover:text-white transition-colors duration-300 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Sign In
+            </Link>
+            <Link 
+              href="/auth/signup" 
+              className="block w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-center mt-4"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Get Started
             </Link>
           </div>
