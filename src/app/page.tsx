@@ -163,7 +163,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 px-6 relative bg-black/10">
+      <section id="features" className="py-32 px-6 relative bg-gradient-to-b from-black/10 via-purple-900/10 to-black/10 overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-transparent rounded-full blur-3xl animate-pulse delay-500"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-2 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 rotate-45 animate-shimmer"></div>
+        </div>
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-6">
@@ -260,8 +266,15 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-32 px-6 relative bg-gradient-to-b from-slate-800/20 to-transparent">
-        <div className="container mx-auto max-w-6xl">
+      <section id="how-it-works" className="py-32 px-6 relative bg-gradient-to-r from-slate-800/30 via-purple-800/20 to-slate-800/30 overflow-hidden">
+        {/* Animated Connecting Lines Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/2 left-1/4 w-32 h-px bg-gradient-to-r from-cyan-500 to-purple-500 animate-pulse"></div>
+          <div className="absolute top-1/2 right-1/4 w-32 h-px bg-gradient-to-r from-purple-500 to-green-500 animate-pulse delay-1000"></div>
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-px h-32 bg-gradient-to-b from-cyan-500/50 to-transparent animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-6">
               How It Works
@@ -271,43 +284,60 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+          <div className="grid md:grid-cols-3 gap-12 relative">
+            {/* Connecting Line for Desktop */}
+            <div className="hidden md:block absolute top-10 left-1/6 right-1/6 h-px bg-gradient-to-r from-cyan-500/50 via-purple-500/50 to-green-500/50 animate-shimmer"></div>
+            
+            <div className="text-center group relative">
+              <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-2xl group-hover:shadow-cyan-500/50 relative z-10">
                 <span className="text-2xl font-bold text-white">1</span>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Design</h3>
-              <p className="text-gray-300">
-                Use our visual builder to create your AI workflow by connecting pre-built components
-              </p>
+              <div className="bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10 rounded-2xl p-6 group-hover:border-cyan-500/50 transition-all duration-500">
+                <h3 className="text-2xl font-bold text-white mb-4">Design</h3>
+                <p className="text-gray-300">
+                  Use our visual builder to create your AI workflow by connecting pre-built components
+                </p>
+              </div>
             </div>
 
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-center group relative">
+              <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-2xl group-hover:shadow-purple-500/50 relative z-10">
                 <span className="text-2xl font-bold text-white">2</span>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Test</h3>
-              <p className="text-gray-300">
-                Test your workflow in real-time with our built-in testing environment
-              </p>
+              <div className="bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10 rounded-2xl p-6 group-hover:border-purple-500/50 transition-all duration-500">
+                <h3 className="text-2xl font-bold text-white mb-4">Test</h3>
+                <p className="text-gray-300">
+                  Test your workflow in real-time with our built-in testing environment
+                </p>
+              </div>
             </div>
 
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-center group relative">
+              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-2xl group-hover:shadow-green-500/50 relative z-10">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Deploy</h3>
-              <p className="text-gray-300">
-                Deploy your workflow to production with one click and monitor performance
-              </p>
+              <div className="bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10 rounded-2xl p-6 group-hover:border-green-500/50 transition-all duration-500">
+                <h3 className="text-2xl font-bold text-white mb-4">Deploy</h3>
+                <p className="text-gray-300">
+                  Deploy your workflow to production with one click and monitor performance
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-32 px-6 relative bg-black/10">
-        <div className="container mx-auto max-w-6xl">
+      <section className="py-32 px-6 relative bg-gradient-to-br from-purple-900/20 via-black/20 to-cyan-900/20 overflow-hidden">
+        {/* Floating Testimonial Bubbles Background */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/30 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-cyan-400/30 rounded-full blur-2xl animate-float delay-1000"></div>
+          <div className="absolute bottom-32 left-1/3 w-20 h-20 bg-purple-400/30 rounded-full blur-2xl animate-float delay-500"></div>
+          <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-pink-400/30 rounded-full blur-2xl animate-float delay-1500"></div>
+        </div>
+        
+        <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-6">
               Loved by Developers
@@ -318,7 +348,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10">
+            <div className="group p-8 rounded-3xl bg-gradient-to-br from-white/5 via-white/2 to-white/0 backdrop-blur-sm border border-white/10 hover:border-yellow-400/30 transition-all duration-500 hover:transform hover:scale-105 hover:rotate-1">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -338,19 +368,19 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10">
+            <div className="group p-8 rounded-3xl bg-gradient-to-br from-white/5 via-white/2 to-white/0 backdrop-blur-sm border border-white/10 hover:border-purple-400/30 transition-all duration-500 hover:transform hover:scale-105 hover:rotate-1 hover:shadow-2xl hover:shadow-purple-500/20">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={i} className="w-5 h-5 text-yellow-400 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-300 mb-4">
+              <p className="text-gray-300 mb-4 group-hover:text-white transition-colors duration-300">
                 "The visual interface is incredibly intuitive. Our entire team was productive within the first day."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full group-hover:scale-110 transition-transform duration-300"></div>
                 <div>
                   <div className="text-white font-semibold">Mike Rodriguez</div>
                   <div className="text-gray-400 text-sm">Lead Developer, StartupXYZ</div>
@@ -358,7 +388,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-sm border border-white/10">
+            <div className="group p-8 rounded-3xl bg-gradient-to-br from-white/5 via-white/2 to-white/0 backdrop-blur-sm border border-white/10 hover:border-green-400/30 transition-all duration-500 hover:transform hover:scale-105 hover:-rotate-1 hover:shadow-2xl hover:shadow-green-500/20">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -382,39 +412,98 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-6 relative">
+      <section className="py-32 px-6 relative bg-gradient-to-br from-indigo-900/30 via-purple-900/30 to-pink-900/30 overflow-hidden">
+        {/* Animated Particle System Background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-4 h-4 bg-cyan-400 rounded-full animate-ping"></div>
+          <div className="absolute top-20 right-20 w-3 h-3 bg-purple-400 rounded-full animate-ping delay-500"></div>
+          <div className="absolute bottom-20 left-20 w-2 h-2 bg-pink-400 rounded-full animate-ping delay-1000"></div>
+          <div className="absolute bottom-10 right-10 w-5 h-5 bg-green-400 rounded-full animate-ping delay-1500"></div>
+          <div className="absolute top-1/2 left-1/4 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/3 w-8 h-8 bg-cyan-400/50 rounded-full animate-bounce"></div>
+        </div>
+        
         <div className="container mx-auto max-w-5xl">
           <div className="relative rounded-3xl p-12 md:p-20 text-center overflow-hidden">
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-white/10 rounded-3xl"></div>
+            {/* Enhanced Background with Multiple Layers */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/30 via-purple-600/30 to-pink-600/30 backdrop-blur-lg border border-white/20 rounded-3xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent rounded-3xl"></div>
+            
+            {/* Animated Border */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/50 via-purple-500/50 to-pink-500/50 p-px">
+              <div className="h-full w-full bg-slate-900/80 rounded-3xl backdrop-blur-lg"></div>
+            </div>
             
             {/* Content */}
             <div className="relative z-10">
+              <div className="mb-8">
+                <div className="inline-block p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center animate-pulse">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Ready to Transform Your
                 <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 animate-shimmer">
                   AI Development?
                 </span>
               </h2>
-              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
                 Join thousands of developers who are already building the future with LangFlow. 
-                Start your journey today – it's free!
+                Start your journey today – it's completely free!
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                 <Link 
                   href="/auth/signup" 
-                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-cyan-500/25 text-center relative overflow-hidden"
+                  className="group w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-bold hover:from-cyan-600 hover:to-purple-600 transition-all duration-500 transform hover:scale-110 hover:rotate-1 shadow-2xl hover:shadow-cyan-500/50 text-center relative overflow-hidden"
                 >
-                  <span className="relative z-10">Start Building Free</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Start Building Free
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 </Link>
                 <Link 
                   href="/pricing"
-                  className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold hover:bg-white/20 transition-all duration-300 border border-white/20 hover:border-white/40 text-center"
+                  className="group w-full sm:w-auto px-10 py-5 bg-white/10 backdrop-blur-sm text-white rounded-full font-bold hover:bg-white/20 transition-all duration-500 border-2 border-white/30 hover:border-cyan-400/50 text-center hover:scale-105 hover:-rotate-1"
                 >
-                  View Pricing
+                  <span className="flex items-center justify-center gap-2">
+                    View Pricing
+                    <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </span>
                 </Link>
+              </div>
+              
+              {/* Trust indicators */}
+              <div className="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t border-white/10">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm">No Credit Card Required</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm">Enterprise Security</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm">99.9% Uptime SLA</span>
+                </div>
               </div>
             </div>
           </div>
