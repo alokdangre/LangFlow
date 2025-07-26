@@ -27,7 +27,7 @@ export default function Contact() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-black/30 backdrop-blur-xl border-b border-white/10 z-[100]">
+      <nav className="fixed top-0 w-full bg-slate-900/80 backdrop-blur-xl border-b border-white/10 z-[9999]">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
             LangFlow
