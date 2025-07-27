@@ -240,41 +240,19 @@ export default function SignUp() {
               </button>
             </form>
 
-            <div className="mt-3 text-center">
-              <p className="text-gray-400 text-sm">
+            <div className="mt-2 text-center">
+              <p className="text-gray-400 text-xs">
                 Already have an account?{' '}
                 <Link href="/auth/signin" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300">
                   Sign in
                 </Link>
               </p>
             </div>
-
-            {/* Features Preview - Simplified */}
-            <div className="mt-4 pt-3 border-t border-white/10">
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
-                  Visual Builder
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
-                  AI Models
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <div className="w-1 h-1 bg-green-400 rounded-full"></div>
-                  One-click Deploy
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-300">
-                  <div className="w-1 h-1 bg-pink-400 rounded-full"></div>
-                  24/7 Support
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Additional Links */}
-          <div className="mt-4 text-center">
-            <Link href="/" className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 text-sm">
+          <div className="mt-2 text-center">
+            <Link href="/" className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 text-xs">
               ← Back to home
             </Link>
           </div>
