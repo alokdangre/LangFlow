@@ -94,8 +94,8 @@ export default function SignUp() {
       </nav>
 
       {/* Sign Up Form */}
-      <div className="flex items-center justify-center h-screen px-6 pt-24 pb-6 relative z-10 overflow-y-auto">
-        <div className="w-full max-w-md my-auto">
+      <div className="flex items-center justify-center h-screen px-6 pt-28 pb-8 relative z-10 overflow-y-auto">
+        <div className="w-full max-w-md">
           {/* Form Container */}
           <div className="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
             <div className="text-center mb-6">
