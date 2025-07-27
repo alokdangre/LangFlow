@@ -784,7 +784,7 @@ export default function Home() {
           </div>
           
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400">© 2024 LangFlow. All rights reserved.</p>
+            <p className="text-gray-400">© 2025 LangFlow. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <Link href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Privacy</Link>
               <Link href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Terms</Link>
