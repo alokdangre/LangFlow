@@ -326,7 +326,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24">
+      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24 pb-0">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
@@ -392,7 +392,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresRef} id="features" className="py-32 px-6 relative bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-800/50 overflow-hidden transition-all duration-1000">
+      <section ref={featuresRef} id="features" className="py-32 px-6 relative bg-gradient-to-b from-slate-900/50 via-purple-900/30 to-slate-800/60 overflow-hidden transition-all duration-1000 -mt-20">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-full blur-3xl animate-pulse"></div>

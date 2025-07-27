@@ -70,7 +70,7 @@ export default function SignIn() {
       </nav>
 
       {/* Sign In Form */}
-      <div className="flex items-center justify-center min-h-screen px-6 py-12 relative z-10">
+      <div className="flex items-center justify-center min-h-screen px-6 py-12 pt-32 relative z-10">
         <div className="w-full max-w-md">
           {/* Form Container */}
           <div className="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
