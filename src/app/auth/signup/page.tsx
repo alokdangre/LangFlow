@@ -97,25 +97,25 @@ export default function SignUp() {
       <div className="flex items-center justify-center h-screen px-6 pt-28 pb-8 relative z-10 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Form Container */}
-          <div className="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="inline-block p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full mb-4">
-                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-5 shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="inline-block p-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full mb-2">
+                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
                 Join LangFlow
               </h2>
-              <p className="mt-2 text-gray-400">
+              <p className="mt-1 text-gray-400 text-sm">
                 Start building AI workflows today
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-2">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                     Full Name
                   </label>
                   <input
@@ -124,7 +124,7 @@ export default function SignUp() {
                     type="text"
                     autoComplete="name"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-sm"
                     placeholder="Enter your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -132,7 +132,7 @@ export default function SignUp() {
                 </div>
                 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                     Email Address
                   </label>
                   <input
@@ -141,7 +141,7 @@ export default function SignUp() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-sm"
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -149,7 +149,7 @@ export default function SignUp() {
                 </div>
                 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                     Password
                   </label>
                   <input
@@ -158,7 +158,7 @@ export default function SignUp() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-sm"
                     placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -166,7 +166,7 @@ export default function SignUp() {
                 </div>
                 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
                     Confirm Password
                   </label>
                   <input
@@ -175,7 +175,7 @@ export default function SignUp() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-sm"
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -184,19 +184,19 @@ export default function SignUp() {
               </div>
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-                  <p className="text-red-400 text-sm text-center">{error}</p>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2">
+                  <p className="text-red-400 text-xs text-center">{error}</p>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-cyan-500/25 disabled:opacity-50 disabled:transform-none"
+                className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-cyan-500/25 disabled:opacity-50 disabled:transform-none text-sm"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     Creating account...
                   </div>
                 ) : (
@@ -204,21 +204,21 @@ export default function SignUp() {
                 )}
               </button>
 
-              <div className="relative my-6">
+              <div className="relative my-3">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-white/10"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-slate-900/50 text-gray-400">Or continue with</span>
+                <div className="relative flex justify-center text-xs">
+                  <span className="px-3 bg-slate-900/50 text-gray-400">Or continue with</span>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-3"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 text-white rounded-lg font-medium hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 text-sm"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -240,8 +240,8 @@ export default function SignUp() {
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-gray-400">
+            <div className="mt-3 text-center">
+              <p className="text-gray-400 text-sm">
                 Already have an account?{' '}
                 <Link href="/auth/signin" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300">
                   Sign in
@@ -249,26 +249,23 @@ export default function SignUp() {
               </p>
             </div>
 
-            {/* Features Preview */}
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <div className="text-center mb-4">
-                <p className="text-gray-400 text-sm">What you get with LangFlow:</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="flex items-center gap-2 text-gray-300">
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
-                  Visual Workflow Builder
+            {/* Features Preview - Simplified */}
+            <div className="mt-4 pt-3 border-t border-white/10">
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="flex items-center gap-1.5 text-gray-300">
+                  <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
+                  Visual Builder
                 </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
-                  Pre-built AI Models
+                <div className="flex items-center gap-1.5 text-gray-300">
+                  <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                  AI Models
                 </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                  One-click Deployment
+                <div className="flex items-center gap-1.5 text-gray-300">
+                  <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+                  One-click Deploy
                 </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <div className="w-1.5 h-1.5 bg-pink-400 rounded-full"></div>
+                <div className="flex items-center gap-1.5 text-gray-300">
+                  <div className="w-1 h-1 bg-pink-400 rounded-full"></div>
                   24/7 Support
                 </div>
               </div>
@@ -276,8 +273,8 @@ export default function SignUp() {
           </div>
 
           {/* Additional Links */}
-          <div className="mt-8 text-center">
-            <Link href="/" className="text-gray-400 hover:text-cyan-400 transition-colors duration-300">
+          <div className="mt-4 text-center">
+            <Link href="/" className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 text-sm">
               ← Back to home
             </Link>
           </div>
