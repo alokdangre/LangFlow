@@ -38,13 +38,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { name, description, nodes = [], edges = [] } = await request.json()
+    let { name, description, nodes = [], edges = [] } = await request.json()
 
     if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      )
+      const userWorkflows = await prisma.workflow.findMany({
+        where: { userId: session.user.id },
+        select: { name: true }
+      })
+      const untitledWorkflows = userWorkflows.filter(w => w.name.startsWith('untitled'))
+      name = `untitled${untitledWorkflows.length + 1}`
     }
 
     const workflow = await prisma.workflow.create({

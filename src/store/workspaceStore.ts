@@ -26,6 +26,7 @@ interface RFState {
   selectedNode: Node<NodeData> | null;
   isRunning: boolean;
   nodeStatuses: Record<string, 'not running' | 'pending' | 'success' | 'error'>;
+  workflows: Workflow[];
   currentWorkflow: Workflow | null;
   hasUnsavedChanges: boolean;
   autoSave: boolean;
@@ -39,8 +40,11 @@ interface RFState {
   setEdges: (edges: Edge[]) => void;
   deleteNode: (nodeId: string) => void;
   setIsRunning: (isRunning: boolean) => void;
+  getWorkflows: () => Promise<void>;
   loadWorkflow: (workflow: Workflow) => void;
-  createNewWorkflow: () => void;
+  createNewWorkflow: (data?: { name: string; description: string }) => Promise<void>;
+  updateWorkflow: (workflowId: string, data: Partial<Workflow>) => Promise<void>;
+  deleteWorkflow: (workflowId: string) => Promise<void>;
   setCurrentWorkflow: (workflow: Workflow | null) => void;
   markAsUnsaved: () => void;
   markAsSaved: () => void;
@@ -71,6 +75,7 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
       selectedNode: null,
       isRunning: false,
       nodeStatuses: {},
+      workflows: [],
       currentWorkflow: null,
       hasUnsavedChanges: false,
       autoSave: false,
@@ -136,6 +141,17 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
         }));
       },
       setIsRunning: (isRunning: boolean) => set({ isRunning }),
+      getWorkflows: async () => {
+        try {
+          const response = await fetch('/api/workflows');
+          if (response.ok) {
+            const workflows = await response.json();
+            set({ workflows });
+          }
+        } catch (error) {
+          console.error('Error fetching workflows:', error);
+        }
+      },
       loadWorkflow: (workflow: Workflow) => {
         console.log(workflow)
         set({
@@ -146,14 +162,51 @@ export const useWorkspaceStore = createWithEqualityFn<RFState>()(
           hasUnsavedChanges: false,
         });
       },
-      createNewWorkflow: () => {
-        set({
-          nodes: [],
-          edges: [],
-          currentWorkflow: null,
-          selectedNode: null,
-          hasUnsavedChanges: false,
-        });
+      createNewWorkflow: async (data) => {
+        try {
+          const response = await fetch('/api/workflows', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data || {}),
+          });
+          if (response.ok) {
+            const newWorkflow = await response.json();
+            await get().getWorkflows();
+            get().loadWorkflow(newWorkflow);
+          }
+        } catch (error) {
+          console.error('Error creating new workflow:', error);
+        }
+      },
+      updateWorkflow: async (workflowId: string, data: Partial<Workflow>) => {
+        try {
+          const response = await fetch(`/api/workflows/${workflowId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          if (response.ok) {
+            await get().getWorkflows();
+          }
+        } catch (error) {
+          console.error('Error updating workflow:', error);
+        }
+      },
+      deleteWorkflow: async (workflowId: string) => {
+        try {
+          const response = await fetch(`/api/workflows/${workflowId}`, {
+            method: 'DELETE',
+          });
+          if (response.ok) {
+            await get().getWorkflows();
+          }
+        } catch (error) {
+          console.error('Error deleting workflow:', error);
+        }
       },
       setCurrentWorkflow: (workflow: Workflow | null) => {
         console.log(workflow)
