@@ -26,26 +26,31 @@ interface Workflow {
 }
 
 interface WorkflowManagerProps {
+  workflows: Workflow[]
   currentWorkflow: Workflow | null
   onWorkflowSelect: (workflow: Workflow) => void
   onWorkflowSave: (workflow: Workflow) => void
-  onWorkflowCreate: () => void
+  onWorkflowCreate: (data?: { name: string; description: string }) => void
+  onWorkflowUpdate: (workflowId: string, data: Partial<Workflow>) => void
+  onWorkflowDelete: (workflowId: string) => void
   currentNodes: any[]
   currentEdges: any[]
 }
 
 export default function WorkflowManager({
+  workflows,
   currentWorkflow,
   onWorkflowSelect,
   onWorkflowSave,
   onWorkflowCreate,
+  onWorkflowUpdate,
+  onWorkflowDelete,
   currentNodes,
   currentEdges
 }: WorkflowManagerProps) {
   const { data: session } = useSession()
   const router = useRouter()
   const { success, error: showError } = useToast()
-  const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [loading, setLoading] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
@@ -53,60 +58,19 @@ export default function WorkflowManager({
   const [newWorkflowName, setNewWorkflowName] = useState('')
   const [newWorkflowDescription, setNewWorkflowDescription] = useState('')
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchWorkflows()
-    }
-  }, [session])
-
-  const fetchWorkflows = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/workflows')
-      if (response.ok) {
-        const data = await response.json()
-        setWorkflows(data)
-      }
-    } catch (error) {
-      console.error('Error fetching workflows:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleCreateWorkflow = async () => {
-    if (!newWorkflowName.trim()) return
+    if (!newWorkflowName.trim()) return;
 
-    try {
-      const response = await fetch('/api/workflows', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newWorkflowName,
-          description: newWorkflowDescription,
-          nodes: [],
-          edges: []
-        }),
-      })
+    await onWorkflowCreate({
+      name: newWorkflowName,
+      description: newWorkflowDescription,
+    });
 
-      if (response.ok) {
-        const newWorkflow = await response.json()
-        setWorkflows([newWorkflow, ...workflows])
-        setShowCreateForm(false)
-        setNewWorkflowName('')
-        setNewWorkflowDescription('')
-        onWorkflowSelect(newWorkflow)
-        success('Workflow Created', `"${newWorkflow.name}" has been created successfully`)
-      } else {
-        showError('Failed to Create', 'Could not create the workflow')
-      }
-    } catch (error) {
-      console.error('Error creating workflow:', error)
-      showError('Error', 'An error occurred while creating the workflow')
-    }
-  }
+    setShowCreateForm(false);
+    setNewWorkflowName('');
+    setNewWorkflowDescription('');
+    success('Workflow Created', `"${newWorkflowName}" has been created successfully`);
+  };
 
   const handleSaveCurrentWorkflow = async () => {
     if (!currentWorkflow) return
@@ -128,7 +92,6 @@ export default function WorkflowManager({
 
       if (response.ok) {
         const savedWorkflow = await response.json()
-        setWorkflows(workflows.map(w => w.id === savedWorkflow.id ? savedWorkflow : w))
         onWorkflowSave(savedWorkflow)
         success('Workflow Saved', `"${savedWorkflow.name}" has been saved successfully`)
       } else {
@@ -142,43 +105,16 @@ export default function WorkflowManager({
 
   const handleRenameWorkflow = async (workflowId: string, newName: string) => {
     if (!newName.trim()) return
-
-    try {
-      const response = await fetch(`/api/workflows/${workflowId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newName }),
-      })
-
-      if (response.ok) {
-        const updatedWorkflow = await response.json()
-        setWorkflows(workflows.map(w => w.id === workflowId ? updatedWorkflow : w))
-        setEditingId(null)
-        setEditingName('')
-      }
-    } catch (error) {
-      console.error('Error renaming workflow:', error)
-    }
+    await onWorkflowUpdate(workflowId, { name: newName })
+    setEditingId(null)
+    setEditingName('')
   }
 
   const handleDeleteWorkflow = async (workflowId: string) => {
     if (!confirm('Are you sure you want to delete this workflow?')) return
-
-    try {
-      const response = await fetch(`/api/workflows/${workflowId}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        setWorkflows(workflows.filter(w => w.id !== workflowId))
-        if (currentWorkflow?.id === workflowId) {
-          onWorkflowCreate() // Reset to new workflow
-        }
-      }
-    } catch (error) {
-      console.error('Error deleting workflow:', error)
+    await onWorkflowDelete(workflowId)
+    if (currentWorkflow?.id === workflowId) {
+      onWorkflowCreate() // Reset to new workflow
     }
   }
 

@@ -22,12 +22,20 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
   const { 
     nodes, 
     edges, 
+    workflows,
     currentWorkflow, 
     loadWorkflow, 
     createNewWorkflow, 
+    updateWorkflow,
+    deleteWorkflow,
     setCurrentWorkflow,
-    markAsSaved 
+    markAsSaved,
+    getWorkflows
   } = useWorkspaceStore();
+
+  React.useEffect(() => {
+    getWorkflows();
+  }, []);
 
   const handleExpandChange = () => {
     const newExpanded = !expanded;
@@ -72,6 +80,7 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
         <div className="p-4 h-full overflow-y-auto">
           {/* Workflow Manager */}
           <WorkflowManager
+            workflows={workflows}
             currentWorkflow={currentWorkflow}
             onWorkflowSelect={loadWorkflow}
             onWorkflowSave={(workflow) => {
@@ -79,6 +88,8 @@ export default function LeftPanel({ onExpandChange }: LeftPanelProps) {
               markAsSaved();
             }}
             onWorkflowCreate={createNewWorkflow}
+            onWorkflowUpdate={updateWorkflow}
+            onWorkflowDelete={deleteWorkflow}
             currentNodes={nodes}
             currentEdges={edges}
           />

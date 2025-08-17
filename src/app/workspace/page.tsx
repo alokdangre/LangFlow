@@ -29,9 +29,11 @@ import ConditionalNode from '@/components/Nodes/ConditionalNode';
 import { ConditionalIcon, LLMIcon, ModelIcon } from '@/components/Nodes/NodeIcons';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 import { nodeTypes } from '@/components/Nodes';
+import { useRouter } from 'next/navigation';
 
 function WorkspaceContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { data: session } = useSession();
   const {
     nodes: persistedNodes,
@@ -139,24 +141,78 @@ function WorkspaceContent() {
     [edges, nodes]
   );
 
-  // Load workflow from URL parameter
+  // Load workflow from URL parameter or create/load recent
   useEffect(() => {
     const workflowId = searchParams.get('workflow');
-    if (workflowId && session?.user && (!currentWorkflow || currentWorkflow.id !== workflowId)) {
-      const loadWorkflowFromId = async () => {
-        try {
-          const response = await fetch(`/api/workflows/${workflowId}`);
-          if (response.ok) {
-            const workflow = await response.json();
-            loadWorkflow(workflow);
-          }
-        } catch (error) {
-          console.error('Error loading workflow:', error);
+    if (session?.user) {
+      if (workflowId) {
+        if (!currentWorkflow || currentWorkflow.id !== workflowId) {
+          loadWorkflowById(workflowId);
         }
-      };
-      loadWorkflowFromId();
+      } else {
+        // No workflow ID in URL, decide what to load
+        handleNoWorkflowId();
+      }
     }
   }, [searchParams, session, currentWorkflow, loadWorkflow]);
+
+  const loadWorkflowById = async (id: string) => {
+    try {
+      const response = await fetch(`/api/workflows/${id}`);
+      if (response.ok) {
+        const workflow = await response.json();
+        loadWorkflow(workflow);
+      } else {
+        // If workflow not found, load default
+        console.error('Workflow not found, loading default.');
+        handleNoWorkflowId();
+      }
+    } catch (error) {
+      console.error('Error loading workflow:', error);
+      handleNoWorkflowId();
+    }
+  };
+
+  const handleNoWorkflowId = async () => {
+    try {
+      const response = await fetch('/api/workflows');
+      if (response.ok) {
+        const userWorkflows = await response.json();
+        if (userWorkflows.length > 0) {
+          // Load the most recent workflow (API returns them sorted)
+          const mostRecentWorkflow = userWorkflows[0];
+          router.push(`/workspace?workflow=${mostRecentWorkflow.id}`);
+        } else {
+          // No workflows exist, create a new one
+          createNewWorkflow();
+        }
+      } else {
+        // Error fetching workflows, just create a new one as a fallback
+        createNewWorkflow();
+      }
+    } catch (error) {
+      console.error('Error fetching workflows:', error);
+      createNewWorkflow();
+    }
+  };
+
+  const createNewWorkflow = async () => {
+    try {
+      const response = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      if (response.ok) {
+        const newWorkflow = await response.json();
+        router.push(`/workspace?workflow=${newWorkflow.id}`);
+      } else {
+        console.error('Failed to create new workflow');
+      }
+    } catch (error) {
+      console.error('Error creating new workflow:', error);
+    }
+  };
 
   // Update viewport when panels change
   useEffect(() => {
