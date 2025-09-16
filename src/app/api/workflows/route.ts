@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const workflows = await prisma.workflow.findMany({
       where: {
-        userId: session.user.id
+        userId: parseInt(session.user.id)
       },
       orderBy: {
         updatedAt: 'desc'
@@ -42,18 +42,28 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       const userWorkflows = await prisma.workflow.findMany({
-        where: { userId: session.user.id },
+        where: { userId: parseInt(session.user.id) },
         select: { name: true }
       })
       const untitledWorkflows = userWorkflows.filter(w => w.name.startsWith('untitled'))
       name = `untitled${untitledWorkflows.length + 1}`
     }
 
+    // Create a default webhook trigger first
+    const defaultTrigger = await prisma.availableTrigger.findFirst({
+      where: { name: "Webhook" }
+    })
+
+    if (!defaultTrigger) {
+      throw new Error("Default webhook trigger not found")
+    }
+
     const workflow = await prisma.workflow.create({
       data: {
         name,
         description,
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
+        triggerId: defaultTrigger.id,
         nodes,
         edges
       }
