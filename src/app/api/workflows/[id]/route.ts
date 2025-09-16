@@ -18,7 +18,7 @@ export async function GET(
     const workflow = await prisma.workflow.findFirst({
       where: {
         id,
-        userId: session.user.id
+        userId: parseInt(session.user.id)
       }
     })
 
@@ -53,7 +53,7 @@ export async function PUT(
     const workflow = await prisma.workflow.findFirst({
       where: {
         id,
-        userId: session.user.id
+        userId: parseInt(session.user.id)
       }
     })
 
@@ -68,7 +68,6 @@ export async function PUT(
         description: description !== undefined ? description : workflow.description,
         nodes: nodes || workflow.nodes,
         edges: edges || workflow.edges,
-        settings: settings !== undefined ? settings : workflow.settings,
         updatedAt: new Date()
       }
     })
@@ -98,7 +97,7 @@ export async function DELETE(
     const workflow = await prisma.workflow.findFirst({
       where: {
         id,
-        userId: session.user.id
+        userId: parseInt(session.user.id)
       }
     })
 
