@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import LLMConfig from './NodeConfigs/LLMConfig'
 import ModelConfig from './NodeConfigs/ModelConfig'
 import ConditionalConfig from './NodeConfigs/ConditionalConfig'
+import WebhookTriggerConfig from './NodeConfigs/WebhookTriggerConfig'
+import SendGmailActionConfig from './NodeConfigs/SendGmailActionConfig'
 import NoConfig from './NodeConfigs/NoConfig'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import ChatInterface from './Chat/ChatInterface'
@@ -144,6 +146,10 @@ export default function RightPanel({ onExpandChange }: RightPanelProps) {
         return <ModelConfig onConfigChange={handleConfigChange} />;
       case 'condition':
         return <ConditionalConfig onConfigChange={handleConfigChange} />;
+      case 'webhookTrigger':
+        return <WebhookTriggerConfig nodeId={selectedNode.id} />;
+      case 'sendGmail':
+        return <SendGmailActionConfig nodeId={selectedNode.id} />;
       case 'chatBox':
         return <NoConfig />;
       default:

@@ -26,7 +26,7 @@ import ChatBoxNode from '@/components/Nodes/ChatBoxNode';
 import LLMNode from '@/components/Nodes/LlmNode';
 import ModelNode from '@/components/Nodes/ModelNode';
 import ConditionalNode from '@/components/Nodes/ConditionalNode';
-import { ConditionalIcon, LLMIcon, ModelIcon } from '@/components/Nodes/NodeIcons';
+import { ConditionalIcon, LLMIcon, ModelIcon, WebhookIcon, GmailIcon } from '@/components/Nodes/NodeIcons';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 import { nodeTypes } from '@/components/Nodes';
 import { useRouter } from 'next/navigation';
@@ -55,7 +55,9 @@ function WorkspaceContent() {
         ...node.data,
         icon: node.type === 'llm' ? <LLMIcon /> :
               node.type === 'model' ? <ModelIcon /> :
-              node.type === 'condition' ? <ConditionalIcon /> : undefined
+              node.type === 'condition' ? <ConditionalIcon /> :
+              node.type === 'webhookTrigger' ? <WebhookIcon /> :
+              node.type === 'sendGmail' ? <GmailIcon /> : undefined
       }
     }))
   }, [persistedNodes])

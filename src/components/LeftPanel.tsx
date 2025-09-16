@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { useReactFlow } from 'reactflow'
-import { ChatBoxIcon, LLMIcon, ModelIcon, ConditionalIcon } from './Nodes/NodeIcons'
+import { ChatBoxIcon, LLMIcon, ModelIcon, ConditionalIcon, WebhookIcon, GmailIcon } from './Nodes/NodeIcons'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import WorkflowManager from './WorkflowManager'
 
@@ -10,6 +10,8 @@ const nodeTypes = [
   { id: 'llm', label: 'LLM', icon: <LLMIcon /> },
   { id: 'model', label: 'Model', icon: <ModelIcon /> },
   { id: 'condition', label: 'Conditional Route', icon: <ConditionalIcon /> },
+  { id: 'webhookTrigger', label: 'Webhook Trigger', icon: <WebhookIcon /> },
+  { id: 'sendGmail', label: 'Send Gmail', icon: <GmailIcon /> },
 ]
 
 interface LeftPanelProps {

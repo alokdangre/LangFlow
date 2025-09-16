@@ -4,6 +4,8 @@ import { useWorkspaceStore } from '@/store/workspaceStore'
 import LLMConfig from './LLMConfig'
 import ModelConfig from './ModelConfig'
 import ConditionalConfig from './ConditionalConfig'
+import WebhookTriggerConfig from './WebhookTriggerConfig'
+import SendGmailActionConfig from './SendGmailActionConfig'
 import NoConfig from './NoConfig'
 
 export default function NodeConfigPanel() {
@@ -52,6 +54,10 @@ export default function NodeConfigPanel() {
         return <ModelConfig onConfigChange={handleConfigChange} />
       case 'condition':
         return <ConditionalConfig onConfigChange={handleConfigChange} />
+      case 'webhookTrigger':
+        return <WebhookTriggerConfig nodeId={selectedNode.id} />
+      case 'sendGmail':
+        return <SendGmailActionConfig nodeId={selectedNode.id} />
       case 'chatBox':
         return <NoConfig />
       default:
