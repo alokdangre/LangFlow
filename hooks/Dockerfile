@@ -37,13 +37,13 @@ RUN apk add --no-cache curl
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 hooksuser
 
-# Copy built application
+# Copy built application and package files
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Generate Prisma client for production
 RUN npx prisma generate
