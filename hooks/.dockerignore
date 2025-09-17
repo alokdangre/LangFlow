@@ -1,0 +1,72 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs (dist will be generated during build)
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.production.local
+.env.test.local
+
+# IDE files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Test files
+test
+tests
+*.test.js
+*.test.ts
+
+# Development files
+src/**/*.test.ts
+src/**/*.spec.ts
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Temporary files
+tmp
+temp
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Development scripts
+start.js
+test-minimal.js
+railway-deploy-checklist.md
