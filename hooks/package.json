@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node start.js",
-    "start:direct": "node dist/index.js",
-    "start:minimal": "node test-minimal.js",
+    "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc && prisma generate",
+    "build": "tsc",
     "postinstall": "prisma generate",
     "migrate": "prisma migrate deploy"
   },
