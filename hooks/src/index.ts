@@ -12,11 +12,15 @@ app.use(express.json());
 // Test database connection
 async function testDatabaseConnection() {
     try {
+        console.log('🔄 Attempting database connection...');
+        console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
         await client.$connect();
         console.log('✅ Database connected successfully');
+        return true;
     } catch (error) {
         console.error('❌ Database connection failed:', error);
-        process.exit(1);
+        console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+        return false;
     }
 }
 
@@ -586,19 +590,50 @@ app.post("/hooks/catch/:userId/:workflowId", async (req: Request, res: Response)
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
-    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+    res.status(200).json({ 
+        status: "OK", 
+        timestamp: new Date().toISOString(),
+        port: PORT,
+        env: process.env.NODE_ENV || 'development'
+    });
 });
 
-const PORT = process.env.PORT || 3001;
+// Simple test endpoint
+app.get("/", (req: Request, res: Response) => {
+    res.json({ 
+        message: "LangFlow Hooks Server", 
+        version: "1.0.0",
+        endpoints: [
+            "GET /health",
+            "GET /triggers", 
+            "GET /actions",
+            "POST /workflows",
+            "POST /hooks/catch/:userId/:workflowId"
+        ]
+    });
+});
+
+const PORT = parseInt(process.env.PORT || '3001');
 
 // Start server with proper async initialization
 async function startServer() {
     try {
-        await testDatabaseConnection();
+        console.log('🚀 Starting hooks server...');
+        console.log('Environment check:');
+        console.log('- PORT:', PORT);
+        console.log('- NODE_ENV:', process.env.NODE_ENV);
+        console.log('- DATABASE_URL exists:', !!process.env.DATABASE_URL);
+        console.log('- GMAIL_CLIENT_ID exists:', !!process.env.GMAIL_CLIENT_ID);
         
-        app.listen(PORT, () => {
+        const dbConnected = await testDatabaseConnection();
+        if (!dbConnected) {
+            console.log('⚠️  Database connection failed, but starting server anyway...');
+        }
+        
+        app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Hooks server running on port ${PORT}`);
             console.log(`📡 Webhook endpoint: http://localhost:${PORT}/hooks/catch/:userId/:workflowId`);
+            console.log(`🏥 Health check: http://localhost:${PORT}/health`);
         });
 
         // Keep the process alive
@@ -616,7 +651,8 @@ async function startServer() {
 
     } catch (error) {
         console.error('❌ Failed to start server:', error);
-        process.exit(1);
+        // Don't exit immediately, let Railway restart the service
+        setTimeout(() => process.exit(1), 5000);
     }
 }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001'
+const BACKEND_URL = process.env.BACKEND_URL || process.env.HOOKS_SERVER_URL || 'https://langflow-production-45ba.up.railway.app'
 
 export async function GET(request: NextRequest) {
   try {
