@@ -1,4 +1,4 @@
-// import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 // import { stripe } from '@/lib/stripe'
 // import { prisma } from '@/lib/prisma'
 // import Stripe from 'stripe'
@@ -201,3 +201,9 @@
 //       return 'FREE'
 //   }
 // }
+
+// Temporary minimal handler to satisfy Next.js route module requirements
+export async function POST(_request: NextRequest) {
+  // No-op implementation; replace with actual Stripe webhook verification and handling as needed
+  return NextResponse.json({ received: true })
+}
