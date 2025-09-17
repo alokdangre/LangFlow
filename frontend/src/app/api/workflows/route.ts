@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const workflows = await prisma.workflow.findMany({
       where: {
-        userId: parseInt(session.user.id)
+        userId: session.user.id
       },
       orderBy: {
         updatedAt: 'desc'
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       const userWorkflows = await prisma.workflow.findMany({
-        where: { userId: parseInt(session.user.id) },
+        where: { userId: session.user.id },
         select: { name: true }
       })
       const untitledWorkflows = userWorkflows.filter(w => w.name.startsWith('untitled'))
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         description,
-        userId: parseInt(session.user.id),
+        userId: session.user.id,
         triggerId: defaultTrigger.id,
         nodes,
         edges
