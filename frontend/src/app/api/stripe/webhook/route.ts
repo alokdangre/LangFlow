@@ -202,8 +202,7 @@ import { NextRequest, NextResponse } from 'next/server'
 //   }
 // }
 
-// Temporary minimal handler to satisfy Next.js route module requirements
+// Webhooks are disabled in this project
 export async function POST(_request: NextRequest) {
-  // No-op implementation; replace with actual Stripe webhook verification and handling as needed
-  return NextResponse.json({ received: true })
+  return NextResponse.json({ error: 'Webhook disabled' }, { status: 404 })
 }

@@ -166,7 +166,7 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-6">
                   <p className="text-sm font-medium text-gray-400 mb-1">Current Plan</p>
-                  <p className="text-3xl font-bold text-white capitalize">{session.user.plan || 'Free'}</p>
+                  <p className="text-3xl font-bold text-white capitalize">Free</p>
                 </div>
               </div>
             </div>

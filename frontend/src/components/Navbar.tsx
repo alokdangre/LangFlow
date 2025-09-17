@@ -89,7 +89,7 @@ export default function Navbar() {
                       <div className="font-medium">{session.user.name}</div>
                       <div className="text-gray-500">{session.user.email}</div>
                       <div className="text-xs text-blue-600 font-medium mt-1">
-                        {session.user.plan} Plan
+                        Free Plan
                       </div>
                     </div>
                     

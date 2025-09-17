@@ -1,25 +1,6 @@
-import Stripe from 'stripe'
+// Stripe is disabled in this project. Provide stubs to avoid build errors.
+export const stripe = undefined
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set')
-}
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-06-30.basil',
-})
-
-export const getStripeCustomer = async (email: string, name?: string) => {
-  const customers = await stripe.customers.list({
-    email,
-    limit: 1,
-  })
-
-  if (customers.data.length > 0) {
-    return customers.data[0]
-  }
-
-  return await stripe.customers.create({
-    email,
-    name,
-  })
+export const getStripeCustomer = async (_email: string, _name?: string) => {
+  throw new Error('Stripe is disabled')
 }

@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 const plans = [
@@ -80,40 +78,6 @@ const plans = [
 ]
 
 export default function Pricing() {
-  const { data: session } = useSession()
-  const [isLoading, setIsLoading] = useState<string | null>(null)
-
-  const handleSubscribe = async (priceId: string, planName: string) => {
-    if (!session) {
-      window.location.href = '/auth/signin'
-      return
-    }
-
-    setIsLoading(priceId)
-
-    try {
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId,
-          planName
-        }),
-      })
-
-      const { url } = await response.json()
-      
-      if (url) {
-        window.location.href = url
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
-    } finally {
-      setIsLoading(null)
-    }
-  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
@@ -247,24 +211,16 @@ export default function Pricing() {
                       Get Started Free
                     </Link>
                   ) : (
-                    <button
-                      onClick={() => handleSubscribe(plan.priceId!, plan.name)}
-                      disabled={isLoading === plan.priceId}
-                      className={`w-full px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50 disabled:transform-none ${
+                    <Link
+                      href="/contact"
+                      className={`w-full px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl ${
                         plan.popular
                           ? `bg-gradient-to-r ${plan.gradient} text-white hover:shadow-cyan-500/25`
                           : `bg-gradient-to-r ${plan.gradient} text-white hover:shadow-lg`
-                      }`}
+                      } text-center block`}
                     >
-                      {isLoading === plan.priceId ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Loading...
-                        </div>
-                      ) : (
-                        `Subscribe to ${plan.name}`
-                      )}
-                    </button>
+                      Contact Sales
+                    </Link>
                   )}
                 </div>
               </div>
