@@ -1,0 +1,270 @@
+import { createWithEqualityFn } from 'zustand/traditional';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { Node, Edge, NodeChange, EdgeChange, applyNodeChanges, applyEdgeChanges } from 'reactflow';
+
+interface NodeData {
+  label: string;
+  typeOfWork?: string;
+  systemPrompt?: string;
+  [key: string]: any;
+}
+
+interface Workflow {
+  id: string;
+  name: string;
+  description?: string;
+  nodes: Node<NodeData>[];
+  edges: Edge[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface RFState {
+  nodes: Node<NodeData>[];
+  edges: Edge[];
+  selectedNode: Node<NodeData> | null;
+  isRunning: boolean;
+  nodeStatuses: Record<string, 'not running' | 'pending' | 'success' | 'error'>;
+  workflows: Workflow[];
+  currentWorkflow: Workflow | null;
+  hasUnsavedChanges: boolean;
+  autoSave: boolean;
+  setNodeStatus: (nodeId: string, status: 'not running' | 'pending' | 'success' | 'error') => void;
+  resetAllNodeStatuses: () => void;
+  onNodesChange: (changes: NodeChange[]) => void;
+  onEdgesChange: (changes: EdgeChange[]) => void;
+  setSelectedNode: (node: Node<NodeData> | null) => void;
+  updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+  setNodes: (nodes: Node<NodeData>[]) => void;
+  setEdges: (edges: Edge[]) => void;
+  deleteNode: (nodeId: string) => void;
+  setIsRunning: (isRunning: boolean) => void;
+  getWorkflows: () => Promise<void>;
+  loadWorkflow: (workflow: Workflow) => void;
+  createNewWorkflow: (data?: { name: string; description: string }) => Promise<void>;
+  updateWorkflow: (workflowId: string, data: Partial<Workflow>) => Promise<void>;
+  deleteWorkflow: (workflowId: string) => Promise<void>;
+  setCurrentWorkflow: (workflow: Workflow | null) => void;
+  markAsUnsaved: () => void;
+  markAsSaved: () => void;
+  setAutoSave: (enabled: boolean) => void;
+  saveCurrentWorkflow: () => Promise<void>;
+}
+
+const storage = {
+  getItem: (name: string) => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(name);
+  },
+  setItem: (name: string, value: string) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(name, value);
+  },
+  removeItem: (name: string) => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(name);
+  },
+};
+
+export const useWorkspaceStore = createWithEqualityFn<RFState>()(
+  persist(
+    (set, get) => ({
+      nodes: [],
+      edges: [],
+      selectedNode: null,
+      isRunning: false,
+      nodeStatuses: {},
+      workflows: [],
+      currentWorkflow: null,
+      hasUnsavedChanges: false,
+      autoSave: false,
+      setNodeStatus: (nodeId, status) => {
+        set((state) => ({
+          nodeStatuses: {
+            ...state.nodeStatuses,
+            [nodeId]: status,
+          },
+        }))
+      },
+      resetAllNodeStatuses: () => {
+        set((state) => {
+          const resetStatuses: Record<string, 'not running'> = {};
+          state.nodes.forEach((node) => {
+            resetStatuses[node.id] = 'not running';
+          });
+          return { nodeStatuses: resetStatuses };
+        })
+      },
+      onNodesChange: (changes: NodeChange[]) => {
+        set((state) => ({
+          nodes: applyNodeChanges(changes, state.nodes),
+          hasUnsavedChanges: true,
+        }));
+      },
+      onEdgesChange: (changes: EdgeChange[]) => {
+        set((state) => ({
+          edges: applyEdgeChanges(changes, state.edges),
+          hasUnsavedChanges: true,
+        }));
+      },
+      setSelectedNode: (node: Node<NodeData> | null) => {
+        set({ selectedNode: node });
+      },
+      updateNodeData: (nodeId: string, data: Partial<NodeData>) => {
+        set({
+          nodes: get().nodes.map((node) => {
+            if (node.id === nodeId) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  ...data,
+                },
+              };
+            }
+            return node;
+          }),
+          hasUnsavedChanges: true,
+        });
+      },
+      setNodes: (nodes: Node<NodeData>[]) => set({ nodes, hasUnsavedChanges: true }),
+      setEdges: (edges: Edge[]) => set({ edges, hasUnsavedChanges: true }),
+      deleteNode: (nodeId: string) => {
+        set((state) => ({
+          nodes: state.nodes.filter((node) => node.id !== nodeId),
+          edges: state.edges.filter(
+            (edge) => edge.source !== nodeId && edge.target !== nodeId
+          ),
+          selectedNode: null,
+          hasUnsavedChanges: true,
+        }));
+      },
+      setIsRunning: (isRunning: boolean) => set({ isRunning }),
+      getWorkflows: async () => {
+        try {
+          const response = await fetch('/api/workflows');
+          if (response.ok) {
+            const workflows = await response.json();
+            set({ workflows });
+          }
+        } catch (error) {
+          console.error('Error fetching workflows:', error);
+        }
+      },
+      loadWorkflow: (workflow: Workflow) => {
+        console.log(workflow)
+        set({
+          nodes: workflow.nodes || [],
+          edges: workflow.edges || [],
+          currentWorkflow: workflow,
+          selectedNode: null,
+          hasUnsavedChanges: false,
+        });
+      },
+      createNewWorkflow: async (data) => {
+        try {
+          const response = await fetch('/api/workflows', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data || {}),
+          });
+          if (response.ok) {
+            const newWorkflow = await response.json();
+            await get().getWorkflows();
+            get().loadWorkflow(newWorkflow);
+          }
+        } catch (error) {
+          console.error('Error creating new workflow:', error);
+        }
+      },
+      updateWorkflow: async (workflowId: string, data: Partial<Workflow>) => {
+        try {
+          const response = await fetch(`/api/workflows/${workflowId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          if (response.ok) {
+            await get().getWorkflows();
+          }
+        } catch (error) {
+          console.error('Error updating workflow:', error);
+        }
+      },
+      deleteWorkflow: async (workflowId: string) => {
+        try {
+          const response = await fetch(`/api/workflows/${workflowId}`, {
+            method: 'DELETE',
+          });
+          if (response.ok) {
+            await get().getWorkflows();
+          }
+        } catch (error) {
+          console.error('Error deleting workflow:', error);
+        }
+      },
+      setCurrentWorkflow: (workflow: Workflow | null) => {
+        console.log(workflow)
+        set({ currentWorkflow: workflow });
+      },
+      markAsUnsaved: () => {
+        set({ hasUnsavedChanges: true });
+      },
+      markAsSaved: () => {
+        set({ hasUnsavedChanges: false });
+      },
+      setAutoSave: (enabled: boolean) => {
+        set({ autoSave: enabled });
+      },
+      saveCurrentWorkflow: async () => {
+        const state = get();
+        if (!state.currentWorkflow) return;
+
+        try {
+          const response = await fetch(`/api/workflows/${state.currentWorkflow.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              nodes: state.nodes,
+              edges: state.edges
+            }),
+          });
+
+          if (response.ok) {
+            const updatedWorkflow = await response.json();
+            set({ 
+              currentWorkflow: updatedWorkflow,
+              hasUnsavedChanges: false 
+            });
+          }
+        } catch (error) {
+          console.error('Error saving workflow:', error);
+        }
+      },
+    }),
+    {
+      name: 'workspace-storage',
+      storage: createJSONStorage(() => storage),
+      partialize: (state) => ({
+        nodes: state.nodes.map((node: Node<NodeData>) => ({
+          ...node,
+          data: {
+            ...node.data,
+            icon: undefined
+          }
+        })),
+        edges: state.edges,
+      }),
+    }
+  )
+);
+
+// Export the store instance for use outside React
+export const workspaceStore = useWorkspaceStore;

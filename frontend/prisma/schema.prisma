@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int         @id @default(autoincrement())
+  name              String?
+  email             String      @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  gmailAccessToken  String?
+  gmailRefreshToken String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  accounts          Account[]
+  sessions          Session[]
+  workflows         Workflow[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+}
+
+model Workflow {
+  id                   String              @id @default(uuid())
+  name                 String
+  description          String?
+  triggerId            String
+  userId               Int
+  isActive             Boolean             @default(true)
+  webhookUrl           String?             // Generated webhook URL for this workflow
+  nodes                Json                @default("[]") // ReactFlow nodes data
+  edges                Json                @default("[]") // ReactFlow edges data
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  trigger              Trigger?
+  actions              Action[]
+  workflowExecutions   WorkflowExecution[]
+  user                 User                @relation(fields: [userId], references: [id])
+}
+
+model Trigger {
+  id          String           @id @default(uuid())
+  workflowId  String           @unique
+  triggerId   String
+  metadata    Json             @default("{}")
+  webhookUrl  String?          // Specific webhook URL for this trigger
+  isActive    Boolean          @default(true)
+  type        AvailableTrigger @relation(fields: [triggerId], references: [id])
+  workflow    Workflow         @relation(fields: [workflowId], references: [id])
+}
+
+model Action {
+  id           String          @id @default(uuid())
+  workflowId   String
+  workflow     Workflow        @relation(fields: [workflowId], references: [id])
+  actionId     String
+  metadata     Json            @default("{}")
+  type         AvailableAction @relation(fields: [actionId], references: [id])
+  sortingOrder Int             @default(0)
+}
+
+model AvailableAction {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  image   String
+  actions Action[]
+}
+
+model AvailableTrigger {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  image    String
+  triggers Trigger[]
+}
+
+model WorkflowExecution {
+  id          String    @id @default(uuid())
+  workflowId  String
+  metadata    Json
+  status      String    @default("running") // running, completed, failed
+  output      Json?     // execution results
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  workflow    Workflow  @relation(fields: [workflowId], references: [id])
+}
