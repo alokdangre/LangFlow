@@ -9,6 +9,12 @@ const client = new PrismaClient();
 
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[REQ] ${req.method} ${req.url}`);
+  next();
+});
+
 // Test database connection
 async function testDatabaseConnection() {
     try {
@@ -590,6 +596,7 @@ app.post("/hooks/catch/:userId/:workflowId", async (req: Request, res: Response)
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
+    console.log("✅ /health checked");
     res.status(200).json({ 
         status: "OK", 
         timestamp: new Date().toISOString(),
@@ -600,6 +607,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 // Simple test endpoint
 app.get("/", (req: Request, res: Response) => {
+    console.log("✅ Root endpoint accessed");
     res.json({ 
         message: "LangFlow Hooks Server", 
         version: "1.0.0",
@@ -630,10 +638,15 @@ async function startServer() {
             console.log('⚠️  Database connection failed, but starting server anyway...');
         }
         
-        app.listen(PORT, '0.0.0.0', () => {
+        const server = app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Hooks server running on port ${PORT}`);
             console.log(`📡 Webhook endpoint: http://localhost:${PORT}/hooks/catch/:userId/:workflowId`);
             console.log(`🏥 Health check: http://localhost:${PORT}/health`);
+            console.log(`🌐 Server listening on 0.0.0.0:${PORT}`);
+        });
+
+        server.on('error', (error) => {
+            console.error('❌ Server error:', error);
         });
 
         // Keep the process alive
@@ -656,4 +669,17 @@ async function startServer() {
     }
 }
 
-startServer();
+// Global error handlers
+process.on("uncaughtException", (err) => {
+    console.error("❌ Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+    console.error("❌ Unhandled Rejection:", reason);
+});
+
+// Catch any startup errors
+startServer().catch((error) => {
+    console.error('❌ Fatal startup error:', error);
+    process.exit(1);
+});
