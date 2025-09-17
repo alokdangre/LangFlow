@@ -49,13 +49,19 @@ export async function POST(request: NextRequest) {
       name = `untitled${untitledWorkflows.length + 1}`
     }
 
-    // Create a default webhook trigger first
-    const defaultTrigger = await prisma.availableTrigger.findFirst({
+    // Create a default webhook trigger first (auto-create if not exists)
+    let defaultTrigger = await prisma.availableTrigger.findFirst({
       where: { name: "Webhook" }
     })
 
     if (!defaultTrigger) {
-      throw new Error("Default webhook trigger not found")
+      // Auto-create the default webhook trigger if it doesn't exist
+      defaultTrigger = await prisma.availableTrigger.create({
+        data: {
+          name: "Webhook",
+          image: "/icons/webhook.svg"
+        }
+      })
     }
 
     const workflow = await prisma.workflow.create({

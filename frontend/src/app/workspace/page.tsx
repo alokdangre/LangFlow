@@ -200,19 +200,26 @@ function WorkspaceContent() {
 
   const createNewWorkflow = async () => {
     try {
+      // First try to initialize the database if needed
+      await fetch('/api/init-db', { method: 'POST' });
+      
       const response = await fetch('/api/workflows', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       });
+      
       if (response.ok) {
         const newWorkflow = await response.json();
-        router.push(`/workspace?workflow=${newWorkflow.id}`);
+        router.push(`/workspace?workflowId=${newWorkflow.id}`);
       } else {
-        console.error('Failed to create new workflow');
+        const error = await response.json();
+        console.error('Error creating workflow:', error);
+        alert(`Failed to create workflow: ${error.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error creating new workflow:', error);
+      console.error('Error creating workflow:', error);
+      alert('Failed to create workflow. Please try again.');
     }
   };
 

@@ -30,6 +30,7 @@ export default function Dashboard() {
   const router = useRouter()
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [loading, setLoading] = useState(true)
+  const [creatingWorkflow, setCreatingWorkflow] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -55,6 +56,36 @@ export default function Dashboard() {
       console.error('Error fetching dashboard data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const createNewWorkflow = async () => {
+    if (creatingWorkflow) return // Prevent double clicks
+    
+    setCreatingWorkflow(true)
+    try {
+      // First try to initialize the database if needed
+      await fetch('/api/init-db', { method: 'POST' })
+      
+      const response = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      
+      if (response.ok) {
+        const newWorkflow = await response.json()
+        router.push(`/workspace?workflowId=${newWorkflow.id}`)
+      } else {
+        const error = await response.json()
+        console.error('Error creating workflow:', error)
+        alert(`Failed to create workflow: ${error.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error creating workflow:', error)
+      alert('Failed to create workflow. Please try again.')
+    } finally {
+      setCreatingWorkflow(false)
     }
   }
 
@@ -174,20 +205,27 @@ export default function Dashboard() {
 
           {/* Quick Actions */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <Link
-              href="/workspace"
-              className="group bg-gradient-to-r from-cyan-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:from-cyan-600/30 hover:via-purple-600/30 hover:to-pink-600/30 transition-all duration-500 hover:transform hover:scale-105"
+            <button
+              onClick={createNewWorkflow}
+              disabled={creatingWorkflow}
+              className="group bg-gradient-to-r from-cyan-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:from-cyan-600/30 hover:via-purple-600/30 hover:to-pink-600/30 transition-all duration-500 hover:transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Create New Workflow</h3>
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {creatingWorkflow ? 'Creating Workflow...' : 'Create New Workflow'}
+                  </h3>
                   <p className="text-gray-300">Build your next AI automation with our visual editor</p>
                 </div>
                 <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                  <PlusIcon className="w-8 h-8 text-white" />
+                  {creatingWorkflow ? (
+                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <PlusIcon className="w-8 h-8 text-white" />
+                  )}
                 </div>
               </div>
-            </Link>
+            </button>
 
             <Link
               href="/pricing"
@@ -210,12 +248,20 @@ export default function Dashboard() {
             <div className="px-8 py-6 border-b border-white/10">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-white">Your Workflows</h2>
-                <Link
-                  href="/workspace"
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25"
+                <button
+                  onClick={createNewWorkflow}
+                  disabled={creatingWorkflow}
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  Create New
-                </Link>
+                  {creatingWorkflow ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Creating...
+                    </div>
+                  ) : (
+                    'Create New'
+                  )}
+                </button>
               </div>
             </div>
 
@@ -227,13 +273,23 @@ export default function Dashboard() {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">No workflows yet</h3>
                   <p className="text-gray-400 mb-6">Start building your first AI workflow to automate your tasks</p>
-                  <Link
-                    href="/workspace"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25"
+                  <button
+                    onClick={createNewWorkflow}
+                    disabled={creatingWorkflow}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full font-semibold hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    <PlusIcon className="w-4 h-4" />
-                    Create your first workflow
-                  </Link>
+                    {creatingWorkflow ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Creating workflow...
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="w-4 h-4" />
+                        Create your first workflow
+                      </>
+                    )}
+                  </button>
                 </div>
               ) : (
                 workflows.map((workflow) => (
@@ -241,7 +297,7 @@ export default function Dashboard() {
                     <div className="flex justify-between items-center">
                       <div className="flex-1">
                         <Link
-                          href={`/workspace?workflow=${workflow.id}`}
+                          href={`/workspace?workflowId=${workflow.id}`}
                           className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors duration-300 group-hover:text-cyan-400"
                         >
                           {workflow.name}
