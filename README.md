@@ -140,5 +140,4 @@ The `hooks/` package also has a Prisma schema for workflow engine–related data
 - TypeScript build failures: check for stale imports after enabling/disabling features.
 - NextAuth callback URLs: ensure `NEXTAUTH_URL` matches your deployed origin.
 
-## License
-This project is provided as-is. Add a LICENSE file if you intend to open-source.
+Made with love by Alok Dangre
