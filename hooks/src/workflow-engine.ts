@@ -7,7 +7,7 @@ interface WorkflowExecutionContext {
   workflowId: string
   executionId: string
   triggerData: any
-  userId: number
+  userId: string
 }
 
 interface NodeData {

@@ -21,7 +21,7 @@ async function testDatabaseConnection() {
 }
 
 // Generate a unique webhook URL for a workflow
-function generateWebhookUrl(userId: number, workflowId: string): string {
+function generateWebhookUrl(userId: string, workflowId: string): string {
     const baseUrl = process.env.WEBHOOK_BASE_URL || `http://localhost:3001`;
     return `${baseUrl}/hooks/catch/${userId}/${workflowId}`;
 }
@@ -41,7 +41,7 @@ app.post("/workflows", async (req: Request, res: Response) => {
                 data: {
                     name,
                     description,
-                    userId: parseInt(userId),
+                    userId: userId,
                     triggerId: "webhook", // Default webhook trigger
                     webhookUrl: "", // Will be updated after creation
                 }
@@ -105,7 +105,7 @@ app.get("/workflows/user/:userId", async (req: Request, res: Response) => {
 
     try {
         const workflows = await client.workflow.findMany({
-            where: { userId: parseInt(userId) },
+            where: { userId: userId },
             include: {
                 trigger: true,
                 actions: {
@@ -412,7 +412,7 @@ app.get("/auth/gmail/callback", async (req: Request, res: Response) => {
         
         // Store tokens in database (you might want to encrypt these)
         await client.user.update({
-            where: { id: parseInt(userId as string) },
+            where: { id: userId as string },
             data: {
                 // Add these fields to your User model
                 gmailAccessToken: tokens.access_token,
@@ -440,7 +440,7 @@ app.post("/actions/send-gmail", async (req: Request, res: Response) => {
     try {
         // Get user's Gmail tokens from database
         const user = await client.user.findUnique({
-            where: { id: parseInt(userId) }
+            where: { id: userId }
         });
 
         if (!user || !user.gmailAccessToken) {
@@ -511,13 +511,13 @@ app.get("/auth/gmail/status/:userId", async (req: Request, res: Response) => {
 
     try {
         const user = await client.user.findUnique({
-            where: { id: parseInt(userId) },
+            where: { id: userId },
             select: { gmailAccessToken: true }
         });
 
         res.json({
             authorized: !!user?.gmailAccessToken,
-            userId: parseInt(userId)
+            userId: userId
         });
     } catch (error) {
         console.error("Error checking Gmail status:", error);
@@ -536,7 +536,7 @@ app.post("/hooks/catch/:userId/:workflowId", async (req: Request, res: Response)
             const workflow = await tx.workflow.findFirst({
                 where: {
                     id: workflowId,
-                    userId: parseInt(userId)
+                    userId: userId
                 }
             });
 
@@ -562,7 +562,7 @@ app.post("/hooks/catch/:userId/:workflowId", async (req: Request, res: Response)
                         workflowId,
                         executionId: execution.id,
                         triggerData: webhookData,
-                        userId: parseInt(userId)
+                        userId: userId
                     });
                 } catch (error) {
                     console.error(`Workflow execution failed: ${execution.id}`, error);
