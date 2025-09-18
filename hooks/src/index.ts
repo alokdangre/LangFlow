@@ -536,23 +536,20 @@ app.get("/auth/gmail/status/:userId", async (req: Request, res: Response) => {
             });
         }
 
-        // Test if the access token is still valid by making a test API call
+        // Test if the access token is still valid by checking with Google's tokeninfo endpoint
         try {
-            const oauth2Client = new google.auth.OAuth2(
-                process.env.GOOGLE_CLIENT_ID,
-                process.env.GOOGLE_CLIENT_SECRET,
-                process.env.GOOGLE_REDIRECT_URI
-            );
-
-            oauth2Client.setCredentials({
-                access_token: user.gmailAccessToken,
-                refresh_token: user.gmailRefreshToken
-            });
-
-            const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+            const tokenInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${user.gmailAccessToken}`);
             
-            // Make a simple API call to test token validity
-            await gmail.users.getProfile({ userId: 'me' });
+            if (!tokenInfoResponse.ok) {
+                throw new Error('Token validation failed');
+            }
+            
+            const tokenInfo: any = await tokenInfoResponse.json();
+            
+            // Check if token has required Gmail scope
+            if (!tokenInfo.scope || !tokenInfo.scope.includes('gmail.send')) {
+                throw new Error('Token missing required Gmail scope');
+            }
 
             res.json({
                 authorized: true,
