@@ -522,13 +522,106 @@ app.get("/auth/gmail/status/:userId", async (req: Request, res: Response) => {
     try {
         const user = await client.user.findUnique({
             where: { id: userId },
-            select: { gmailAccessToken: true }
+            select: { 
+                gmailAccessToken: true,
+                gmailRefreshToken: true 
+            }
         });
 
-        res.json({
-            authorized: !!user?.gmailAccessToken,
-            userId: userId
-        });
+        if (!user?.gmailAccessToken) {
+            return res.json({
+                authorized: false,
+                userId: userId,
+                reason: "No access token found"
+            });
+        }
+
+        // Test if the access token is still valid by making a test API call
+        try {
+            const oauth2Client = new google.auth.OAuth2(
+                process.env.GOOGLE_CLIENT_ID,
+                process.env.GOOGLE_CLIENT_SECRET,
+                process.env.GOOGLE_REDIRECT_URI
+            );
+
+            oauth2Client.setCredentials({
+                access_token: user.gmailAccessToken,
+                refresh_token: user.gmailRefreshToken
+            });
+
+            const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+            
+            // Make a simple API call to test token validity
+            await gmail.users.getProfile({ userId: 'me' });
+
+            res.json({
+                authorized: true,
+                userId: userId,
+                reason: "Token is valid"
+            });
+        } catch (tokenError: any) {
+            console.log("Gmail token validation failed:", tokenError.message);
+            
+            // If token is expired/invalid, try to refresh it
+            if (user.gmailRefreshToken) {
+                try {
+                    const oauth2Client = new google.auth.OAuth2(
+                        process.env.GOOGLE_CLIENT_ID,
+                        process.env.GOOGLE_CLIENT_SECRET,
+                        process.env.GOOGLE_REDIRECT_URI
+                    );
+
+                    oauth2Client.setCredentials({
+                        refresh_token: user.gmailRefreshToken
+                    });
+
+                    const { credentials } = await oauth2Client.refreshAccessToken();
+                    
+                    // Update the user with new access token
+                    await client.user.update({
+                        where: { id: userId },
+                        data: { 
+                            gmailAccessToken: credentials.access_token 
+                        }
+                    });
+
+                    res.json({
+                        authorized: true,
+                        userId: userId,
+                        reason: "Token refreshed successfully"
+                    });
+                } catch (refreshError: any) {
+                    console.log("Token refresh failed:", refreshError.message);
+                    
+                    // Clear invalid tokens
+                    await client.user.update({
+                        where: { id: userId },
+                        data: { 
+                            gmailAccessToken: null,
+                            gmailRefreshToken: null 
+                        }
+                    });
+
+                    res.json({
+                        authorized: false,
+                        userId: userId,
+                        reason: "Token expired and refresh failed"
+                    });
+                }
+            } else {
+                // No refresh token available, clear access token
+                await client.user.update({
+                    where: { id: userId },
+                    data: { gmailAccessToken: null }
+                });
+
+                res.json({
+                    authorized: false,
+                    userId: userId,
+                    reason: "Token invalid and no refresh token available"
+                });
+            }
+        }
     } catch (error) {
         console.error("Error checking Gmail status:", error);
         res.status(500).json({ error: "Failed to check Gmail authorization status" });
